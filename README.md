@@ -97,6 +97,12 @@ We stop the construction of the tree when we have visited all nodes.
 Sometime, the next node does not exist since a constraint blocked its construction. We need to intorduce a while loop in order to
 visit the next existing one.
 
+Input:
+covariates, responses, min_bucket constraints, !!! best split !!!
+    
+Output:
+matrix that presents the tree building process
+
 # Problems Encountered
 azerty
 
