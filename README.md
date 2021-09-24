@@ -78,6 +78,25 @@ The class receinve as input either one or two vectors:
 - gini index if y1 (and y2) are boolean
 - MSE otherwise
 
+### Node construction
+#### Breath First Search (i.e., symmetric trees)
+In this script, we are looking at the tree construction. This script is highly dependent on the best split search. The inputs are
+the cut function/class, the covariates and the response.
+
+The approach is following the idea of the HeapTree - especially, the fact that a node has two children which are n*2 and n2+1.
+
+The class will visit each node one after the other. The strategy is then a breath first search approach.
+
+We have as output the tree's construction sequence (i.e, each time we are adding a new layer in the matrix that allocate the observations
+to a final leave). Here, we need to insert in the new sequence the id for the two new nodes only.
+
+Additionnally, since we have building constraints (e.g., min leaf size), we might skip the construction of a node.
+
+We stop the construction of the tree when we have visited all nodes.
+
+Sometime, the next node does not exist since a constraint blocked its construction. We need to intorduce a while loop in order to
+visit the next existing one.
+
 # Problems Encountered
 azerty
 
