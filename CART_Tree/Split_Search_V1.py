@@ -6,7 +6,7 @@ Created on Thu Sep 23 20:09:02 2021
 """
 
 """
-                    Split Search for Continous Variables
+                    Split Search for Continous Variables (Not Done Adding My Comments)
 """
 
 """
@@ -181,7 +181,7 @@ class Best_Splitting_Point:
 
 
 """
-Example
+Example using Four Different Methods
 """        
 
 #Calling defined class
@@ -204,41 +204,4 @@ Gaussian_Split_Point = Tree_Split.Gaussian_Split(splits = 10, sample = 100)
     1. Cross valiation to select splitting point
     2. Other shortcuts to simplify number of points to visit
 """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-
-        
-        
     
