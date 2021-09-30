@@ -188,16 +188,16 @@ Example
 Tree_Split = Best_Splitting_Point(X,Y)
 
 #A. Sort Split
-mine = Tree_Split.All_Splits(sample = 100)
+All_Split_Point = Tree_Split.All_Splits(sample = 100)
 
 #B. Quantile Split
-mine = Tree_Split.Quantile_Split(quantiles = 10, sample = 100)
+Quantile_Split_Point = Tree_Split.Quantile_Split(quantiles = 10, sample = 100)
 
 #C. Binning Split
-mine = Tree_Split.Binning_Split(bins = 10, sample = 100)
+Binning_Split_Point = Tree_Split.Binning_Split(bins = 10, sample = 100)
 
 #D. Gaussian Split
-mine = Tree_Split.Gaussian_Split(splits = 10, sample = 100)
+Gaussian_Split_Point = Tree_Split.Gaussian_Split(splits = 10, sample = 100)
 
 
 """Other Ideas to Implement:
