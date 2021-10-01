@@ -18,11 +18,11 @@ X, Y = load_boston(return_X_y=True)
 X = X[:,6]  
 
 """
-The goal of this class is to find the best split point given a continuous feature for a decision tree 
-using a purity index (MSE for continuous target and Gini Index for categorical target used in this class). 
-Different splitting methods used (defined in class) include:
+The goal of this class is to find the best split point given a continuous feature for a decision tree using a purity index (MSE for continuous target and Gini Index for 
+categorical target used in this class). Different splitting methods used (defined in class) include:
     
-    1. All Possible Splits (All_Splits): WILL ADD
+    1. All Possible Splits (All_Splits): All possible splitting points are evaluated to find best split at decision tree node. This is done by looking at the adjacent values 
+    of each pair of points in a given feature vector, and finding point that has lowest purity score for target variable. 
     
     2. Quantile Splits (Quantile_Split): WILL ADD
         
