@@ -3,8 +3,8 @@ Test output
 """
 
 # Load data
-from sklearn.datasets import load_boston
-X, y = load_boston(return_X_y=True)
+#from sklearn.datasets import load_boston
+#X, y = load_boston(return_X_y=True)
 
 
 """
@@ -34,36 +34,36 @@ Output:
 """
 
 
-
-
 """
 Class Start
 """
 
 import numpy as np
+import Best_Cut as bc
 
-np.random.seed(10)  # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                    # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                    # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
+feature_search = bc.Best_cut()
 
 
 class NodeSearch():
     
-    def stopping_criteria(self, node_level, y_records, stopping_criteria):
+    def stopping_criteria(self, node_level, y_records, stopping_criteria, max_size):
         
         max_node = y_records[:,-1].max()                                                    # continue until reach last node
         
         if node_level == max_node:                                                           # stopping criteria
-                stopping_criteria = True
+            stopping_criteria = True
+                
+        if node_level > 2**max_size-1:
+            stopping_criteria = True
                 
         return stopping_criteria
     
     
-    def next_node(self, node_level, y_records, stopping_criteria):
+    def next_node(self, node_level, y_records, stopping_criteria, max_size):
         
         node_level += 1  # Here next node operation
             
-        stopping_criteria = self.stopping_criteria(node_level, y_records, stopping_criteria)    # stopping criteria
+        stopping_criteria = self.stopping_criteria(node_level, y_records, stopping_criteria, max_size)    # stopping criteria
         
         node_level_decision = False                                                             # some nodes do not exist                                                                                                
                                                                                                 # need to go to the next one
@@ -72,7 +72,7 @@ class NodeSearch():
             if sum(y_records[:,-1]==node_level) == 0:                                           # HERE, if node does not exist
                 node_level += 1                                                                 # go to next one
                 
-                stopping_criteria = self.stopping_criteria(node_level, y_records, stopping_criteria)
+                stopping_criteria = self.stopping_criteria(node_level, y_records, stopping_criteria, max_size)
                 node_level_decision = stopping_criteria
               
             else : 
@@ -120,7 +120,7 @@ class NodeSearch():
         return y_records
     
         
-    def breath_first_search(self, X, y, min_bucket = 5):
+    def breath_first_search(self, X, y, min_bucket = 5, max_size = 3):
         
         y_records = np.random.randint(0,1,len(y)) + 1           # initialise tree records
         y_records = np.transpose(np.array([y_records]))
@@ -137,17 +137,13 @@ class NodeSearch():
             
             vector_size = len(mother_y)
             
-            cut = np.random.randint(1,vector_size,1)[0] # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                                                        # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                                                        # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                                                        # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
-                                                        # TO BE CHANGED - TMP - MIMIC CUT !!!!!!!!
             
-
+            cut = feature_search.visit_all_features(X = father_X, y = mother_y).astype(int)
+            
             y_records = self.create_new_node(cut, vector_size, y_records, node_level, min_bucket)   # node creation   
                                     
             
-            stopping_criteria, node_level = self.next_node(node_level, y_records, stopping_criteria) # go to next node
+            stopping_criteria, node_level = self.next_node(node_level, y_records, stopping_criteria, max_size) # go to next node
                 
             
             father_X = X[y_records[:,-1]==node_level,:]                                              # update the new parents    
@@ -162,12 +158,12 @@ class NodeSearch():
 """
 Test output
 """
-NS = NodeSearch()
+#NS = NodeSearch()
 
-test = NS.breath_first_search(X, y)
+#test = NS.breath_first_search(X, y)
 
 
-y_records = test
+#y_records = test
 
 
 
