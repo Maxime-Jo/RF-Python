@@ -80,7 +80,7 @@ class Best_Splitting_Point:
             quantile_list.append(quant_value)
         return quantile_list
     
-    #C. Binning Values (Specify Number of Bins to Use)
+    #C. Binning Values (Specify Number of Bins to Use) #GET SOURCE
     def Binning_Values(self,values, bins, sample):
         final_values =  np.array(self.Sampling(values, sample))
         bins_values = np.linspace(min(final_values), max(final_values), bins)
@@ -177,8 +177,6 @@ class Best_Splitting_Point:
         gaussian_split_points = self.Gaussian_Values(self.data[:, 0],splits, sample) #Find Quantile values
         optimal_split_point = self.Splitting(gaussian_split_points)
         return optimal_split_point   
-
-
 
 """
 Example using Four Different Methods
