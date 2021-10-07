@@ -94,7 +94,7 @@ class NodeSearch():
         
     
     
-    def create_new_node (self, cut, vector_size, y_records, node_level, min_bucket):
+    def create_new_node (self, cut, vector_size, y_records, node_level, min_bucket, root_tree_building, feature, cut_value):
         
         child_1 = node_level*2
         child_2 = child_1 + 1
@@ -116,8 +116,9 @@ class NodeSearch():
             new_record = np.concatenate((left, cut_record, right))                              # new record of the tree
         
             y_records = np.concatenate((y_records, np.transpose([new_record])), axis = 1)       # insert into the full records
+            root_tree_building = np.concatenate((root_tree_building, [[node_level, cut_value, feature]]), axis = 0)
             
-        return y_records
+        return y_records, root_tree_building
     
         
     def breath_first_search(self, X, y, min_bucket = 5, max_size = 3):
@@ -129,6 +130,8 @@ class NodeSearch():
         father_X = X                                            # initialise parents
         mother_y = y                                            # initialise parents
         
+        root_tree_building = np.array([[0,0,-1]])
+        
         stopping_criteria = False
              
         
@@ -138,9 +141,12 @@ class NodeSearch():
             vector_size = len(mother_y)
             
             
-            cut = feature_search.visit_all_features(X = father_X, y = mother_y).astype(int)
+            cut, feature, cut_value = feature_search.visit_all_features(X = father_X, y = mother_y)
+            cut = cut.astype(int)
             
-            y_records = self.create_new_node(cut, vector_size, y_records, node_level, min_bucket)   # node creation   
+            y_records, root_tree_building = self.create_new_node(cut, vector_size, 
+                                                                 y_records, node_level, min_bucket, 
+                                                                 root_tree_building, feature, cut_value)   # node creation   
                                     
             
             stopping_criteria, node_level = self.next_node(node_level, y_records, stopping_criteria, max_size) # go to next node
@@ -149,9 +155,9 @@ class NodeSearch():
             father_X = X[y_records[:,-1]==node_level,:]                                              # update the new parents    
             mother_y = y[y_records[:,-1]==node_level]
             
-            print(node_level//2)
+            print(node_level)
             
-        return y_records
+        return y_records, root_tree_building
             
     
 
