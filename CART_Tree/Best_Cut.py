@@ -39,7 +39,7 @@ Output:
 # Libraries
 import Split_Search as split
 import numpy as np
-import GiniRMSE as sim
+import Measure_Purity as sim
 
 MoD = sim.MeasureOfDispersion()
 
@@ -51,7 +51,7 @@ class Best_cut:
         
         root_purity = MoD.MeasureOfDispersion(y,[])
         
-        splits_evaluation = np.array([[len(y),root_purity]])    # ensure that previous split is not better
+        splits_evaluation = np.array([[len(y),root_purity, -1]])    # ensure that previous split is not better
         
         for f in range(0,X.shape[1]):
             
@@ -65,12 +65,14 @@ class Best_cut:
             
             cut = len(x_left)
             
-            splits_evaluation = np.concatenate((splits_evaluation, [[cut, purity]]),0)
+            splits_evaluation = np.concatenate((splits_evaluation, [[cut, purity, f]]),0)
             
         
-        cut = splits_evaluation[splits_evaluation[:,1] == np.min(splits_evaluation[:,1]),0].min()
+        best_purity = np.min(splits_evaluation[:,1])
+        cut = splits_evaluation[splits_evaluation[:,1] == best_purity,0].min()
+        feature = splits_evaluation[(splits_evaluation[:,0] == cut) & (splits_evaluation[:,1] == best_purity),2][0]
 
-        return cut
+        return cut, feature, cut_value
             
 
 
