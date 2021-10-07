@@ -34,7 +34,7 @@ Output:
     - predictions
 """
 
-import NodesCreation as nc
+import Nodes_Creation as nc
 import numpy as np
 
 
@@ -44,7 +44,7 @@ class Prediction:
 
         NS = nc.NodeSearch()
         
-        y_records = NS.breath_first_search(X, y, min_bucket=5, max_size = 4)
+        y_records, root_tree_building = NS.breath_first_search(X, y, min_bucket=5, max_size = 4)
         
         y_last = y_records[:,y_records.shape[1]-1]
         y_pred = y.copy()
@@ -65,9 +65,9 @@ class Prediction:
             else:    
                 y_pred[y_last==n] = y[y_last==n].mean()
                 
-        return y_pred
+        return y_pred, root_tree_building
     
-y_pred = Prediction().prediction_train(X,y)
+y_pred, root_tree_building = Prediction().prediction_train(X,y)
 
 print("The train predicitons are....")
 print(y_pred)
