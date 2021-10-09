@@ -1,7 +1,0 @@
-Order of code:
-1. Transform categorical: transform categorical to continuous
-2. Measure Purity: purity measurs to find best split
-3. Split search: find best split point based on purity measure
-4. Best cut: find which variable to use to create split based on split purity
-5. Node creation: creates tree and returns node obs is apart of at each stage (also identifies best split at each node and returns it)
-6. Train prediction: makes prediction on training set based on terminal node of each obs.
