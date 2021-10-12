@@ -128,7 +128,8 @@ class Missing_Value:
         if is_numeric:                      # target data is numerical
             model = LinearRegression()
         else: 
-            model = LogisticRegression()    # target data is categorical
+            #model = LogisticRegression()    # target data is categorical
+            model = LogisticRegression(max_iter=4000)
                 
         model.fit(X_train,Y_train)
         Y_test = model.predict(X_test)
@@ -136,25 +137,32 @@ class Missing_Value:
 
     def impute(self, num_method, cat_method='mode'):
         for cidx in self.missing_data:
-            if cat_method == 'mode':
+            if self.missing_data[cidx][0]:      # data is numerical
+                if num_method == 'mean':
+                    mean = self.__get_mean(cidx)
+                    for ridx in self.missing_data[cidx][1]:
+                        self.data[cidx, ridx] = mean
+                elif num_method == 'median':
+                    median = self.__get_median(cidx)
+                    for ridx in self.missing_data[cidx][1]:
+                        self.data[cidx, ridx] = median
+                elif num_method == 'mode':
                     mode = self.__get_mode(cidx)    
                     for ridx in self.missing_data[cidx][1]:
                         self.data[cidx, ridx] = mode
-            elif num_method == "regr":
+                elif num_method == "regr":
                     regr = self.__regression(cidx, self.missing_data[cidx][0])
                     self.data[cidx, self.missing_data[cidx][1]] = regr
-            else:
-                # mean/median methods are for numerical data only
-                if self.missing_data[cidx][0]:      # data is numerical
-                    if num_method == 'mean':
-                        mean = self.__get_mean(cidx)
-                        for ridx in self.missing_data[cidx][1]:
-                            self.data[cidx, ridx] = mean
-                    elif num_method == 'median':
-                        median = self.__get_median(cidx)
-                        for ridx in self.missing_data[cidx][1]:
-                            self.data[cidx, ridx] = median
-                    else: raise ValueError('Invalid method') 
+                else: raise ValueError('Invalid method') 
+            else:                               # data is categorical
+                if cat_method == 'mode':
+                    mode = self.__get_mode(cidx)    
+                    for ridx in self.missing_data[cidx][1]:
+                        self.data[cidx, ridx] = mode
+                elif cat_method == "regr":
+                    regr = self.__regression(cidx, self.missing_data[cidx][0])
+                    self.data[cidx, self.missing_data[cidx][1]] = regr
+                else: raise ValueError('Invalid method') 
     
 
 # test
@@ -162,19 +170,18 @@ from sklearn.datasets import load_boston
 X, y = load_boston(return_X_y=True)
 
 # to create some missing values
-X[150:165,3] = np.nan     # orig: [0., 0., 1., 0., 1., 1., 0., 0., 0., 0., 1., 0., 1., 1., 0.]
-X[26:30,6] = np.nan       # orig: [90.3, 88.8, 94.4, 87.3]
-X[251:260,8] = np.nan     # orig: [7., 7., 7., 1., 1., 3., 5., 5., 5.]
+X_nan = X.copy()
+X_nan[150:165,3] = np.nan     # orig: [0., 0., 1., 0., 1., 1., 0., 0., 0., 0., 1., 0., 1., 1., 0.]
+X_nan[26:30,6] = np.nan       # orig: [90.3, 88.8, 94.4, 87.3]
+X_nan[251:260,8] = np.nan     # orig: [7., 7., 7., 1., 1., 3., 5., 5., 5.]
 
-c = np.column_stack((X,y)).transpose()
+c = np.column_stack((X_nan,y)).transpose()
 
 #missing = Missing_Value(c)
 missing = Missing_Value(c, cat_col=[3,8])
 missing.impute(num_method="regr", cat_method="regr")
 X_imputed = missing.data[0:len(missing.data)-1,:].transpose()
 
-
-X, y = load_boston(return_X_y=True)
 from sklearn.metrics import accuracy_score, mean_squared_error
 
 print(X[150:165,3])
@@ -188,3 +195,34 @@ print("{:10.3f}".format(mean_squared_error(X[26:30,6], X_imputed[26:30,6])))
 print(X[251:260,8])
 print(X_imputed[251:260,8])
 print("{:10.3f}".format(accuracy_score(X[251:260,8], X_imputed[251:260,8])))
+
+
+#************************************************
+# test for KNN
+
+from numpy import isnan
+from sklearn.impute import KNNImputer
+
+# print total missing
+print('Missing: %d' % sum(isnan(X_nan).flatten()))
+
+# define imputer
+imputer = KNNImputer(n_neighbors=3, weights='distance', metric='nan_euclidean')
+# fit on the dataset
+imputer.fit(X_nan)
+# transform the dataset
+Xtrans = imputer.transform(X_nan)
+# print total missing
+print('Missing: %d' % sum(isnan(Xtrans).flatten()))
+
+print(X[150:165,3])
+print(Xtrans[150:165,3])
+print("{:10.3f}".format(accuracy_score(X[150:165,3], np.round(Xtrans[150:165,3]))))
+
+print(X[26:30,6])
+print(Xtrans[26:30,6])
+print("{:10.3f}".format(mean_squared_error(X[26:30,6], Xtrans[26:30,6])))
+
+print(X[251:260,8])
+print(Xtrans[251:260,8])
+print("{:10.3f}".format(accuracy_score(X[251:260,8], np.round(Xtrans[251:260,8]))))
