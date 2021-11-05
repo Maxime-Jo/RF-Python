@@ -50,7 +50,7 @@ Best_Splitting_Point Class
 import numpy as np
 import statistics as stats
 import scipy.stats
-import GiniRMSE as sim
+import Measure_Purity as sim
 
 class Best_Splitting_Point:
      
