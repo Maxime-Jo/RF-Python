@@ -93,7 +93,6 @@ class NodeSearch():
         return out
         
     
-    
     def create_new_node (self, cut, vector_size, y_records, node_level, min_bucket, root_tree_building, feature, cut_value):
         
         child_1 = node_level*2
@@ -170,6 +169,26 @@ Test output
 
 
 #y_records = test
+
+#y_records, root_tree_building = NS.breath_first_search(X_train,y_train)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

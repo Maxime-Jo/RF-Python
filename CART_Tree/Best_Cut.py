@@ -51,7 +51,7 @@ class Best_cut:
         
         root_purity = MoD.MeasureOfDispersion(y,[])
         
-        splits_evaluation = np.array([[len(y),root_purity, -1]])    # ensure that previous split is not better
+        splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
         
         for f in range(0,X.shape[1]):
             
@@ -59,18 +59,19 @@ class Best_cut:
             
             feature_split = split.Best_Splitting_Point(x, y) # load the class --> should be load once!    
                        
-            cut_value, purity  = feature_split.All_Splits(sample = 100) # get cut and purity
+            cut_value, purity  = feature_split.All_Points() # get cut and purity
             
             x_left = x[x<=cut_value]
             
             cut = len(x_left)
             
-            splits_evaluation = np.concatenate((splits_evaluation, [[cut, purity, f]]),0)
+            splits_evaluation = np.concatenate((splits_evaluation, [[cut, cut_value, purity, f]]),0)
             
         
-        best_purity = np.min(splits_evaluation[:,1])
-        cut = splits_evaluation[splits_evaluation[:,1] == best_purity,0].min()
-        feature = splits_evaluation[(splits_evaluation[:,0] == cut) & (splits_evaluation[:,1] == best_purity),2][0]
+        best_purity = np.min(splits_evaluation[:,2])
+        cut_value = splits_evaluation[splits_evaluation[:,2] == best_purity,1][0]
+        cut = splits_evaluation[splits_evaluation[:,2] == best_purity,0][0]
+        feature = splits_evaluation[splits_evaluation[:,0] == cut, 3][0]
 
         return cut, feature, cut_value
             
@@ -79,4 +80,34 @@ class Best_cut:
 """
 test
 """
+
+#BC = Best_cut()
+#cut, feature, cut_value = BC.visit_all_features(X_train,y_train)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

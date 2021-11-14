@@ -103,7 +103,7 @@ class Best_Splitting_Point:
     #Step 2: Defining Sampling Procedure for Sample Call in Step 4
     def Sampling(self, values, sample_size):
         sampled_set = []
-        random_rows = np.random.randint(len(values), size = sample_size)
+        random_rows = np.random.choice(len(values), size = min(sample_size,len(values)), replace = False)
         for i in random_rows:
             sample = values[i]
             sampled_set.append(sample)
@@ -159,6 +159,12 @@ class Best_Splitting_Point:
         optimal_split_point, best_purity = self.Splitting(adjacent_split_points)
         return optimal_split_point, best_purity
     
+    def All_Points(self, sample = None):
+        sample = self.Empty_Sample(sample)
+        split_points = self.data[:, 0] #Find adjacent values
+        optimal_split_point, best_purity = self.Splitting(split_points)
+        return optimal_split_point, best_purity
+    
     #B. Quantile Split (Specify Number of Quantiles to Use)
     def Quantile_Split(self, quantiles, sample = None): #User Can specify number of quantiles
         sample = self.Empty_Sample(sample)
@@ -185,23 +191,28 @@ Example using Four Different Methods
 """        
 
 #Calling defined class
-#Tree_Split = Best_Splitting_Point(X,Y)
+#Tree_Split = Best_Splitting_Point(X_train[:,5],y_train)
 
-#A. Sort Split
-#All_Split_Point = Tree_Split.All_Splits(sample = 100)
+# #A. Sort Split
+#All_Split_Point = Tree_Split.All_Points()
 
-#B. Quantile Split
-#Quantile_Split_Point = Tree_Split.Quantile_Split(quantiles = 10, sample = 100)
+# #B. Quantile Split
+# #Quantile_Split_Point = Tree_Split.Quantile_Split(quantiles = 10, sample = 100)
 
-#C. Binning Split
-#Binning_Split_Point = Tree_Split.Binning_Split(bins = 10, sample = 100)
+# #C. Binning Split
+# #Binning_Split_Point = Tree_Split.Binning_Split(bins = 10, sample = 100)
 
-#D. Gaussian Split
-#Gaussian_Split_Point = Tree_Split.Gaussian_Split(splits = 10, sample = 100)
+# #D. Gaussian Split
+# #Gaussian_Split_Point = Tree_Split.Gaussian_Split(splits = 10, sample = 100)
 
 
-"""Other Ideas to Implement:
-    1. Cross valiation to select splitting point
-    2. Other shortcuts to simplify number of points to visit
-"""
-    
+
+
+
+
+
+
+
+
+
+
