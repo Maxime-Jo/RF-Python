@@ -83,37 +83,34 @@ class NodeSearch():
     
     
     
-    def building_constraints (self, bucket_1, bucket_2, min_bucket):                            # can we create a node?
+    def building_constraints (self, bucket_1, bucket_2, min_bucket, cut_type):                            # can we create a node?
         
         if min(len(bucket_1),len(bucket_2)) >= min_bucket:
             out = True
         else:
             out = False
             
+        if cut_type == "root":
+            out = False
+        else:
+            out = out
+            
         return out
         
     
-    def create_new_node (self, cut, vector_size, y_records, node_level, min_bucket, root_tree_building, feature, cut_value):
+    def create_new_node (self, cut, vector_size, y_records, node_level, min_bucket, root_tree_building, feature, cut_value, cut_type, record):
         
         child_1 = node_level*2
         child_2 = child_1 + 1
+        record = record+child_1
         
         bucket_1 = [child_1]*cut
         bucket_2 = [child_2]*(vector_size-cut)
         
-        if self.building_constraints(bucket_1, bucket_2, min_bucket) == True:
-        
-            cut_record = np.array(bucket_1 + bucket_2)                                          # create the two news branches
-        
-            min_index = np.squeeze(np.where(y_records[:,-1]==node_level)).min()                  # we need to re-insert the branches                                                                                                
-            max_index = np.squeeze(np.where(y_records[:,-1]==node_level)).max()                  # looking at where to insert
-        
-                    
-            left = y_records[np.squeeze(np.where(y_records[:,-1])<min_index),-1]                # get the left and the right records
-            right = y_records[np.squeeze(np.where(y_records[:,-1]))>max_index,-1]               # for insertion
-        
-            new_record = np.concatenate((left, cut_record, right))                              # new record of the tree
-        
+        if self.building_constraints(bucket_1, bucket_2, min_bucket, cut_type) == True:
+            
+            new_record = np.copy(y_records[:,-1])
+            new_record[new_record==node_level] = record
             y_records = np.concatenate((y_records, np.transpose([new_record])), axis = 1)       # insert into the full records
             root_tree_building = np.concatenate((root_tree_building, [[node_level, cut_value, feature]]), axis = 0)
             
@@ -140,12 +137,13 @@ class NodeSearch():
             vector_size = len(mother_y)
             
             
-            cut, feature, cut_value = feature_search.visit_all_features(X = father_X, y = mother_y)
-            cut = cut.astype(int)
+            cut, feature, cut_value, cut_type, record = feature_search.visit_all_features(X = father_X, y = mother_y)
+            #cut = cut.astype(int)
+            print(cut_type)
             
             y_records, root_tree_building = self.create_new_node(cut, vector_size, 
                                                                  y_records, node_level, min_bucket, 
-                                                                 root_tree_building, feature, cut_value)   # node creation   
+                                                                 root_tree_building, feature, cut_value, cut_type, record)   # node creation   
                                     
             
             stopping_criteria, node_level = self.next_node(node_level, y_records, stopping_criteria, max_size) # go to next node
@@ -165,12 +163,8 @@ Test output
 """
 #NS = NodeSearch()
 
-#test = NS.breath_first_search(X, y)
+#y_records, root_tree_building = NS.breath_first_search(X, y)
 
-
-#y_records = test
-
-#y_records, root_tree_building = NS.breath_first_search(X_train,y_train)
 
 
 
