@@ -40,7 +40,7 @@ class Train_Prediction:
 
         NS = nc.NodeSearch()
         
-        y_records, root_tree_building = NS.breath_first_search(X, y, min_bucket=5, max_size = 4)
+        y_records, root_tree_building = NS.breath_first_search(X, y, min_bucket=1, max_size = 6)
         
         y_last = y_records[:,y_records.shape[1]-1]
         y_pred = y.copy()
@@ -65,16 +65,23 @@ class Train_Prediction:
     
     
     
+# test
+# train = Train_Prediction()
+
+# y_pred =  train.Prediction_Train( X, y)
     
     
+# from sklearn import tree
+# clf = tree.DecisionTreeRegressor(max_depth=5) 
+# clf = clf.fit(X, y)
+# y_pred_scikit = clf.predict(X) 
     
     
-    
-    
-    
-    
-    
-    
+
+# (((y-y_pred)**2).sum())**0.5
+ 
+
+# (((y-y_pred_scikit)**2).sum())**0.5  
     
     
     
