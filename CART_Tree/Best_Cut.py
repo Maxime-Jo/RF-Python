@@ -46,14 +46,26 @@ MoD = sim.MeasureOfDispersion()
 
 class Best_cut:
     
-    def visit_all_features(self, X, y):
+    def visit_all_features(self, X, y, sample_f=None):
         
         
         root_purity = MoD.MeasureOfDispersion(y,[])
         
         self.splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
         
-        for f in range(0,X.shape[1]):
+        # random feature selection
+        
+        
+        if sample_f == None:
+            sample_f = X.shape[1]
+            features = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)
+            
+        else:
+            sample_f = min(X.shape[1],sample_f)
+            feature_columns = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)            
+            features = np.random.choice(feature_columns, sample_f, replace = False)
+                
+        for f in features:
             
             x = X[:,f] # create a vector
             
@@ -103,7 +115,6 @@ test
 """
 
 # BC = Best_cut()
-
 
 
 # cut, feature, cut_value, cut_type, record = BC.visit_all_features(X,y)
