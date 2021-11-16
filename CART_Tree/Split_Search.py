@@ -57,7 +57,7 @@ class Best_Splitting_Point:
     #Step 0: Initializing split variable (feature) and target variable (target)
     def __init__(self, feature, target):                            #Initialization line that takes in feature and target variable
         self.data = np.transpose(np.array([feature,target]))        #Creating 2 dimensional array for feature and target variable
-        self.data = self.data[self.data[:, 0].argsort()]            #Sorting Feature variables (ascending)
+        #self.data = self.data[self.data[:, 0].argsort()]            #Sorting Feature variables (ascending)
     
     #Step 1: Finding Potential Splitting Points using Different Methods
     
