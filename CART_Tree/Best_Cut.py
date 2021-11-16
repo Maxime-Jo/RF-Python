@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct  6 13:24:44 2021
-
 @author: maxime
 """
 
@@ -17,17 +16,13 @@ Test output
 
 """
 The goal of this class is to create a loop to visit all the features and find the best split.
-
 IMPORTANT
 IMPORTANT
 In HERE, we implement the Random Forest strategy of sampling (features and observations) IMPORTANT
 IMPORTANT
 IMPORTANT
-
 We also define here the type of split strategy.
-
 Discuss about: ensuring that previous split is not better
-
 Input:
     - X is a matrix of features
     - y is a response vector
@@ -53,17 +48,14 @@ class Best_cut:
         
         self.splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
         
-        # random feature selection
-        
-        
         if sample_f == None:
             sample_f = X.shape[1]
             features = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)
-            
+     
         else:
-            sample_f = min(X.shape[1],sample_f)
+            sample = min(X.shape[1],sample_f)
             feature_columns = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)            
-            features = np.random.choice(feature_columns, sample_f, replace = False)
+            features = np.random.choice(feature_columns, sample, replace = False)
                 
         for f in features:
             
