@@ -10,27 +10,19 @@ Test output
 """
 In this script, we are looking at the tree construction. This script is highly dependent on the best split search. The inputs are
 the cut function/class, the covariates and the response.
-
 The approach is following the idea of the HeapTree - especially, the fact that a node has two children which are n*2 and n2+1.
-
 The class will visit each node one after the other. The strategy is then a breath first search approach.
-
 We have as output the tree's construction sequence (i.e, each time we are adding a new layer in the matrix that allocate the observations
 to a final leave). Here, we need to insert in the new sequence the id for the two new nodes only.
-
 Additionnally, since we have building constraints (e.g., min leaf size), we might skip the construction of a node.
-
 We stop the construction of the tree when we have visited all nodes.
-
 Sometime, the next node does not exist since a constraint blocked its construction. We need to intorduce a while loop in order to
 visit the next existing one.
-
 Input:
     covariates, responses, min_bucket constraints, !!! best split !!!
     
 Output:
     matrix that presents the tree building process
-
 """
 
 
@@ -117,8 +109,9 @@ class NodeSearch():
         return y_records, root_tree_building
     
         
-    def breath_first_search(self, X, y, min_bucket = 5, max_size = 3):
+    def breath_first_search(self, X, y, min_bucket = 1, max_size = 5, sample_f=None):
         
+
         y_records = np.random.randint(0,1,len(y)) + 1           # initialise tree records
         y_records = np.transpose(np.array([y_records]))
         
@@ -133,11 +126,10 @@ class NodeSearch():
         
         while stopping_criteria == False:
             
-            
             vector_size = len(mother_y)
             
             
-            cut, feature, cut_value, cut_type, record = feature_search.visit_all_features(X = father_X, y = mother_y)
+            cut, feature, cut_value, cut_type, record = feature_search.visit_all_features(X = father_X, y = mother_y, sample_f=sample_f)
             #cut = cut.astype(int)
             print(cut_type)
             
