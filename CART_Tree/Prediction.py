@@ -21,7 +21,7 @@ class Prediction:
         train = Train.Train()
         L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X_train, y_train, sample_f = sample_f, 
                                                                         n_tree = n_tree, sample_n = sample_n,
-                                                                        min_bucket=min_bucket, max_size = max_size)
+                                                                        min_bucket=min_bucket, max_size = max_size, cores = cores)
         
         y_pred = self.Pred(X_train, y_train, L_records, L_root_tree_building, L_train_pred, cores = cores)
         
@@ -34,7 +34,7 @@ class Prediction:
         train = Train.Train()
         L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X_train, y_train, sample_f = sample_f, 
                                                                         n_tree = n_tree, sample_n = sample_n,
-                                                                        min_bucket=min_bucket, max_size = max_size)
+                                                                        min_bucket=min_bucket, max_size = max_size, cores = cores)
         
         y_pred = self.Pred(X_test, y_test, L_records, L_root_tree_building, L_train_pred,cores = cores)
         
@@ -97,11 +97,11 @@ class Prediction:
     
 
 #Test
-Pred = Prediction()
-y_train_pred = Pred.Train_Prediction(X_train, y_train, sample_f = 3, 
-                                                 n_tree = 100, sample_n = 0.5,
-                                                   min_bucket=5, max_size = 4, cores = 4)
+#Pred = Prediction()
+#y_train_pred = Pred.Train_Prediction(X_train, y_train, sample_f = 3, 
+#                                                  n_tree = 500, sample_n = 0.5,
+#                                                    min_bucket=5, max_size = 4, cores = 4)
 
-y_test_pred = Pred.Test_Prediction(X_train, y_train, X_test, y_test, sample_f = 3, 
-                                                 n_tree = 100, sample_n = 0.5,
-                                                   min_bucket=5, max_size = 2, cores = 4)
+# y_test_pred = Pred.Test_Prediction(X_train, y_train, X_test, y_test, sample_f = 3, 
+#                                                  n_tree = 100, sample_n = 0.5,
+#                                                    min_bucket=5, max_size = 2, cores = 4)
