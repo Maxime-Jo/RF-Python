@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Oct 14 18:06:35 2021
-
 @author: maxime + tyler
 """
 
@@ -34,7 +33,7 @@ import Nodes_Creation as nc
 import numpy as np
 
 
-class Train_Prediction:
+class Train:
     
     def CART_Train(self, X, y, sample_f=None): #Prediction on Training Set
 
@@ -67,7 +66,7 @@ class Train_Prediction:
         return y_records, root_tree_building
     
     
-    def RF_Train(self, X, y, sample_f=None, 
+    def RF_Train(self, X, y, sample_f = 3, 
                  n_tree = 1, sample_n = None,
                  min_bucket=1, max_size = 6): #Prediction on Training Set
 
@@ -75,6 +74,7 @@ class Train_Prediction:
         
         L_records = []
         L_root_tree_building = []
+        L_train_pred = []
         
         for n in range(0,n_tree):
             print("#######################")
@@ -85,9 +85,9 @@ class Train_Prediction:
             if sample_n == None:
                 observations_sample = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)
             else:
-                sample_n = int(min(sample_n,1)*X.shape[0])
+                sample = int(min(sample_n,1)*X.shape[0])
                 observations = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)            
-                observations_sample = np.random.choice(observations, sample_n, replace = True)
+                observations_sample = np.random.choice(observations, sample, replace = True)
                 
             """ Sample """
             X_sample = X[observations_sample,:]
@@ -99,25 +99,45 @@ class Train_Prediction:
             """ Append results """
             L_records.append(y_records)
             L_root_tree_building.append(root_tree_building)
+            
+            #Tree Prediction
+            y_last = y_records[:,y_records.shape[1]-1]
+            y_pred = y_sample.copy()
         
+            tree_nodes = np.unique(y_last)
+        
+            for n in tree_nodes:
+                print(n)
+                
+                if y_sample.dtype == 'bool':  # if boolean --> majority vote
+                    sum_pred = y_sample[y_pred==n].sum()   # sum = value of the yes
+                    len_pred = len(y_sample[y_pred==n])    # size of the pool
+                    
+                    if sum_pred > len_pred/2:       # if value of yes are majority then 1 otherwise 0
+                        y_pred[y_pred==n] = 1
+                    else: y_pred[y_pred==n] = 0
+                    
+                else:    
+                    y_pred[y_last==n] = y_sample[y_last==n].mean()
+                
+            L_train_pred.append(y_pred)
+       
         print("#######################")
         print("TRAINING DONE")
         print("#######################")
                 
-        return L_records, L_root_tree_building
+        return L_records, L_root_tree_building, L_train_pred
     
     
     
 # test
-#train = Train_Prediction()
+# train = Train()
 
-#y_pred =  train.CART_Train( X, y)
+# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
+#                                                   n_tree = 4, sample_n = 0.2,
+#                                                   min_bucket=5, max_size = 4)
+    
 
-#L_records, L_root_tree_building =  train.RF_Train(X, y, sample_f = 3, 
-#                                                  n_tree = 10, sample_n = 0.8,
-#                                                  min_bucket=5, max_size = 4)
-    
-    
 # from sklearn import tree
 # clf = tree.DecisionTreeRegressor(max_depth=5) 
 # clf = clf.fit(X, y)
@@ -127,7 +147,6 @@ class Train_Prediction:
  
 
 # (((y-y_pred_scikit)**2).sum())**0.5  
-    
     
     
     
