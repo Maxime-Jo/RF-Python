@@ -15,14 +15,6 @@ Created on Thu Oct 14 18:06:35 2021
 Test output
 """
 
-#Loading Boston Dataset and Splittng into Training and Test Set
-
-#from sklearn.datasets import load_boston
-#from sklearn.model_selection import train_test_split
-#X, y = load_boston(return_X_y=True)
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42) 
-
-
 """
 The goal is to do the training and test prediction
 We need to apply majority vote for the boolean and average for the real values.
@@ -38,7 +30,7 @@ Output:
 
 import Nodes_Creation as nc
 import numpy as np
-from joblib import Parallel, delayed
+#from joblib import Parallel, delayed
 
 
 class Train:
@@ -84,7 +76,7 @@ class Train:
         L_root_tree_building = []
         L_train_pred = []
         
-        def Trees(n): 
+        for n in range(0,n_tree):
                 print("#######################")
                 print("TREE: "+str(n))
                 print("#######################")
@@ -128,15 +120,9 @@ class Train:
                     else:    
                         y_pred[y_last==n] = y_sample[y_last==n].mean()
                     
+                #Append
                 L_train_pred.append(y_pred)
-                
-                return L_records, L_root_tree_building, L_train_pred
-       
-        for L_records, L_root_tree_building, L_train_pred in Parallel(n_jobs= cores)(delayed(Trees)(n) for n in range(0,n_tree)):
-                L_records.append(L_records)
-                L_root_tree_building.append(L_root_tree_building)
-                L_train_pred.append(L_train_pred)
-                
+                            
         print("#######################")
         print("TRAINING DONE")
         print("#######################")
@@ -148,9 +134,9 @@ class Train:
 # test
 #train = Train()
 
-#L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
-                                                   #n_tree = 100, sample_n = 0.2,
-                                                   #min_bucket=5, max_size = 4, cores = 4)
+# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
+#                                                    n_tree = 10, sample_n = 0.2,
+#                                                    min_bucket=5, max_size = 4, cores = 4)
 
 
 
