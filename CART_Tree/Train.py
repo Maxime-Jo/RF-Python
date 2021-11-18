@@ -29,8 +29,8 @@ Output:
 """
 
 # Load data
-#from sklearn.datasets import load_boston
-#X, y = load_boston(return_X_y=True)
+# from sklearn.datasets import load_boston
+# X, y = load_boston(return_X_y=True)
 
 import Nodes_Creation as nc
 import numpy as np
@@ -39,7 +39,13 @@ import multiprocessing
 from joblib import Parallel, delayed
 
 
-class Train:
+
+class Train(rc.Reduce_Complexity,nc.NodeSearch) :
+    
+    def __init__ (self):
+        self.counter_tree_visite = 0
+        rc.Reduce_Complexity.__init__(self)
+        nc.NodeSearch.__init__(self)
     
     
     def CART_Train(self,X, y, sample_f = None, 
@@ -47,8 +53,10 @@ class Train:
                  min_bucket=5, max_size = 6, 
                  strategy=None, bins = None):
         
-        RC = rc.Reduce_Complexity()
-        NS = nc.NodeSearch()
+        #RC = rc.Reduce_Complexity()
+        #NS = nc.NodeSearch()
+        
+        self.counter_tree_visite += 1
         
         """ Bootstrap N"""
         if sample_n == None:
@@ -63,10 +71,13 @@ class Train:
         y_sample = y[observations_sample]
         
         """ Reduce Complexity"""
-        X_sample = RC.reduce(X_sample,bins,strategy)
+        #X_sample = RC.reduce(X_sample,bins,strategy)
+        X_sample = self.reduce(X_sample,bins,strategy)
         
         """ Get tree """
-        y_records, root_tree_building = NS.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
+        #y_records, root_tree_building = NS.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
+        #                                                       max_size = max_size, sample_f=sample_f)
+        y_records, root_tree_building = self.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
                                                                max_size = max_size, sample_f=sample_f)
         
         return y_records, root_tree_building
@@ -117,6 +128,12 @@ class Train:
         print("#######################")
         print("TRAINING DONE")
         print("#######################")
+        
+        print("Nb of trees: ", str(train.counter_tree_visite))
+        print("Nb of evaluated nodes: ", str(train.counter_node_visite))
+        print("Nb of evaluated feature: ", str(train.counter_feature_visite))
+        print("Nb of evaluated split: ", str(train.counter_split_feature_visite))
+        print("Nb of evaluated MoD: ", str(train.counter_MoD))
             
                 
         return L_records, L_root_tree_building
@@ -126,18 +143,11 @@ class Train:
 # test
 # train = Train()
 
+
 # L_records, L_root_tree_building =  train.RF_Train(X, y, sample_f = 3, 
 #                                                     n_tree = 100, sample_n = 0.8,
 #                                                     min_bucket=5, max_size = 5, cores = 1,
 #                                                     strategy=None, bins =None)
-
-
-
-
-
-
-
-
 
 
 
