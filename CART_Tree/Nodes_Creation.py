@@ -33,10 +33,12 @@ Class Start
 import numpy as np
 import Best_Cut as bc
 
-feature_search = bc.Best_cut()
 
-
-class NodeSearch():
+class NodeSearch(bc.Best_cut):
+    
+    def __init__ (self):
+        self.counter_node_visite = 0
+        bc.Best_cut.__init__(self)
     
     def stopping_criteria(self, node_level, y_records, stopping_criteria, max_size):
         
@@ -128,9 +130,10 @@ class NodeSearch():
             
             vector_size = len(mother_y)
             
+            self.counter_node_visite += 1
             
-            cut, feature, cut_value, cut_type, record = feature_search.visit_all_features(X = father_X, y = mother_y, sample_f=sample_f)
-            #cut = cut.astype(int)
+            cut, feature, cut_value, cut_type, record = self.visit_all_features(X = father_X, y = mother_y, sample_f=sample_f)
+            
             print(cut_type)
             
             y_records, root_tree_building = self.create_new_node(cut, vector_size, 
