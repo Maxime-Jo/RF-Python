@@ -50,27 +50,25 @@ Best_Splitting_Point Class
 import numpy as np
 import Measure_Purity as sim
 
-class Best_Splitting_Point:
+class Best_Splitting_Point(sim.MeasureOfDispersion):
+    
+    def __init__ (self):
+        self.counter_split_feature_visite = 0
+        sim.MeasureOfDispersion.__init__(self)
+        
      
-    #Step 0: Initializing split variable (feature) and target variable (target)
-    def __init__(self, feature, target):                            #Initialization line that takes in feature and target variable
-        self.data = np.transpose(np.array([feature,target]))        #Creating 2 dimensional array for feature and target variable
-        #self.data = self.data[self.data[:, 0].argsort()]            #Sorting Feature variables (ascending)
-    
-    
-    #Step 3: Splitting Feature Based on Specified Strategy
-    #Returns Best Split Point Based on Error Measures Defined in 'GINIRMSE'
     
     def Splitting(self,split_points): 
         split_purity = [] #Creating empty list to append split purity values
         
         for s in split_points: #Loops over length of possible split points
         
+            self.counter_split_feature_visite += 1
+        
             lower = self.data[self.data[:,0]<=s,:]
             upper = self.data[self.data[:,0]>s,:]
         
-            MoD = sim.MeasureOfDispersion()
-            split_purity.append(MoD.MeasureOfDispersion(lower[:,1], upper[:,1]))
+            split_purity.append(self.MeasureOfDispersion(lower[:,1], upper[:,1]))
             
         split_results = np.transpose(np.array([split_points,split_purity]))
         best_purity = np.min(split_results[:,1])
@@ -83,7 +81,8 @@ class Best_Splitting_Point:
     ###Note to team: Can make this into one big function where user input is split type
     
     
-    def All_Points(self, sample = None):
+    def All_Points(self,feature, target, sample = None):
+        self.data = np.transpose(np.array([feature,target])) 
         split_points = np.unique(self.data[:, 0]) #Find adjacent values
         optimal_split_point, best_purity = self.Splitting(split_points)
         return optimal_split_point, best_purity
