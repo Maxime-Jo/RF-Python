@@ -34,17 +34,17 @@ Output:
 # Libraries
 import Split_Search as split
 import numpy as np
-import Measure_Purity as sim
-
-MoD = sim.MeasureOfDispersion()
 
 
-class Best_cut:
+class Best_cut(split.Best_Splitting_Point):
+    
+    def __init__ (self):
+        self.counter_feature_visite = 0
+        split.Best_Splitting_Point.__init__(self)
     
     def visit_all_features(self, X, y, sample_f=None):
         
-        
-        root_purity = MoD.MeasureOfDispersion(y,[])
+        root_purity = self.MeasureOfDispersion(y,[])
         
         self.splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
         
@@ -59,11 +59,11 @@ class Best_cut:
                 
         for f in features:
             
+            self.counter_feature_visite += 1
+            
             x = X[:,f] # create a vector
             
-            feature_split = split.Best_Splitting_Point(x, y) # load the class --> should be load once!    
-                       
-            cut_value, purity  = feature_split.All_Points() # get cut and purity
+            cut_value, purity  = self.All_Points(x, y)
             
             x_left = x[x<=cut_value]
             
