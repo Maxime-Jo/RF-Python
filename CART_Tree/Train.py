@@ -28,124 +28,122 @@ Output:
     - predictions
 """
 
+# Load data
+#from sklearn.datasets import load_boston
+#X, y = load_boston(return_X_y=True)
+
 import Nodes_Creation as nc
 import numpy as np
-#from joblib import Parallel, delayed
+import Reduce_n_complexity as rc
+import multiprocessing
+from joblib import Parallel, delayed
 
 
 class Train:
     
-    def CART_Train(self, X, y, sample_f=None): #Prediction on Training Set
-
+    
+    def CART_Train(self,X, y, sample_f = None, 
+                 sample_n = None,
+                 min_bucket=5, max_size = 6, 
+                 strategy=None, bins = None):
+        
+        RC = rc.Reduce_Complexity()
         NS = nc.NodeSearch()
         
-        y_records, root_tree_building = NS.breath_first_search(X, y, min_bucket=1, max_size = 6, sample_f=sample_f)
-        
-        print("#######################")
-        print("TRAINING DONE")
-        print("#######################")
-        
-        #y_last = y_records[:,y_records.shape[1]-1]
-        #y_pred = y.copy()
-        #tree_nodes = np.unique(y_last)
-        
-        #for n in tree_nodes:
-        #    print(n)
+        """ Bootstrap N"""
+        if sample_n == None:
+            observations_sample = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)
+        else:
+            sample = int(min(sample_n,1)*X.shape[0])
+            observations = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)            
+            observations_sample = np.random.choice(observations, sample, replace = True)
             
-        #    if y.dtype == 'bool':  # if boolean --> majority vote
-        #        sum_pred = y[y_pred==n].sum()   # sum = value of the yes
-        #        len_pred = len(y[y_pred==n])    # size of the pool
-                
-        #        if sum_pred > len_pred/2:       # if value of yes are mojority then 1 otherwise 0
-        #            y_pred[y_pred==n] = 1
-        #        else: y_pred[y_pred==n] = 0
-                
-        #    else:    
-        #        y_pred[y_last==n] = y[y_last==n].mean()
-                
+        """ Sample """
+        X_sample = X[observations_sample,:]
+        y_sample = y[observations_sample]
+        
+        """ Reduce Complexity"""
+        X_sample = RC.reduce(X_sample,bins,strategy)
+        
+        """ Get tree """
+        y_records, root_tree_building = NS.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
+                                                               max_size = max_size, sample_f=sample_f)
+        
         return y_records, root_tree_building
     
     
     def RF_Train(self, X, y, sample_f = 3, 
                  n_tree = 1, sample_n = None,
-                 min_bucket=1, max_size = 6, cores = 1): #Prediction on Training Set
-
-        NS = nc.NodeSearch()
+                 min_bucket=1, max_size = 6, cores = 1, 
+                 strategy=None, bins = None):
         
         L_records = []
         L_root_tree_building = []
-        L_train_pred = []
         
-        for n in range(0,n_tree):
-                print("#######################")
-                print("TREE: "+str(n))
-                print("#######################")
-                
-                """ Bootstrap N"""
-                if sample_n == None:
-                    observations_sample = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)
-                else:
-                    sample = int(min(sample_n,1)*X.shape[0])
-                    observations = np.linspace(0,X.shape[0]-1,X.shape[0]).astype(int)            
-                    observations_sample = np.random.choice(observations, sample, replace = True)
+        cores = min(cores, multiprocessing.cpu_count()-1)
+        
+        if cores == 1:     
+            for n in range(0,n_tree):
+                    print("#######################")
+                    print("TREE: "+str(n))
+                    print("#######################")
                     
-                """ Sample """
-                X_sample = X[observations_sample,:]
-                y_sample = y[observations_sample]
-                
-                """ Get tree """
-                y_records, root_tree_building = NS.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
-                                                                       max_size = max_size, sample_f=sample_f)
+                    
+                    """ Get tree """
+                    y_records, root_tree_building = self.CART_Train(X, y, sample_f = sample_f, 
+                                                                    sample_n = sample_n,
+                                                                    min_bucket=min_bucket, max_size = max_size,
+                                                                    strategy=strategy, bins = bins)
+            
+                    """ Append results """
+                    L_records.append(y_records)
+                    L_root_tree_building.append(root_tree_building)
+                    
+            
+        else:            
+            processed_list = Parallel(n_jobs=cores)(delayed(self.CART_Train)(X, y, sample_f = sample_f, 
+                                                                    sample_n = sample_n,
+                                                                    min_bucket=min_bucket, max_size = max_size,
+                                                                    strategy=strategy, bins = bins) for i in range(0,n_tree))
+            
+            for tree in processed_list:
+                y_records, root_tree_building = tree
+    
                 """ Append results """
                 L_records.append(y_records)
                 L_root_tree_building.append(root_tree_building)
                 
-                #Tree Prediction
-                y_last = y_records[:,y_records.shape[1]-1]
-                y_pred = y_sample.copy()
-            
-                tree_nodes = np.unique(y_last)
-            
-                for n in tree_nodes:
-                    print(n)
-                    
-                    if y_sample.dtype == 'bool':  # if boolean --> majority vote
-                        sum_pred = y_sample[y_pred==n].sum()   # sum = value of the yes
-                        len_pred = len(y_sample[y_pred==n])    # size of the pool
-                        
-                        if sum_pred > len_pred/2:       # if value of yes are majority then 1 otherwise 0
-                            y_pred[y_pred==n] = 1
-                        else: y_pred[y_pred==n] = 0
-                        
-                    else:    
-                        y_pred[y_last==n] = y_sample[y_last==n].mean()
-                    
-                #Append
-                L_train_pred.append(y_pred)
-                            
+                
         print("#######################")
         print("TRAINING DONE")
         print("#######################")
+            
                 
-        return L_records, L_root_tree_building, L_train_pred
+        return L_records, L_root_tree_building
     
     
     
 # test
-#train = Train()
+# train = Train()
 
-# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
-#                                                    n_tree = 10, sample_n = 0.2,
-#                                                    min_bucket=5, max_size = 4, cores = 4)
+# L_records, L_root_tree_building =  train.RF_Train(X, y, sample_f = 3, 
+#                                                     n_tree = 100, sample_n = 0.8,
+#                                                     min_bucket=5, max_size = 5, cores = 1,
+#                                                     strategy=None, bins =None)
 
 
 
-# from sklearn import tree
-# clf = tree.DecisionTreeRegressor(max_depth=5) 
-# clf = clf.fit(X, y)
-# y_pred_scikit = clf.predict(X) 
-    
-# (((y-y_pred)**2).sum())**0.5
- 
 
-# (((y-y_pred_scikit)**2).sum())**0.5  
+
+
+
+
+
+
+
+
+
+
+
+
+
