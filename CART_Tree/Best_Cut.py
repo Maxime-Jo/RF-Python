@@ -42,18 +42,18 @@ class Best_cut(split.Best_Splitting_Point):
         self.counter_feature_visite = 0
         split.Best_Splitting_Point.__init__(self)
     
-    def visit_all_features(self, X, y, sample_f=None):
+    def visit_all_features(self, X, y, num_feat=None):
         
         root_purity = self.MeasureOfDispersion(y,[])
         
         self.splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
         
-        if sample_f == None:
-            sample_f = X.shape[1]
+        if num_feat == None:
+            num_feat = X.shape[1]
             features = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)
      
         else:
-            sample = min(X.shape[1],sample_f)
+            sample = min(X.shape[1],num_feat)
             feature_columns = np.linspace(0,X.shape[1]-1,X.shape[1]).astype(int)            
             features = np.random.choice(feature_columns, sample, replace = False)
                 
