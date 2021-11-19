@@ -75,5 +75,6 @@ class Prediction:
         y_pred = y_pred.mean(axis=1) 
         
         return y_pred
+    
 
     
