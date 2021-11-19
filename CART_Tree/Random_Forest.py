@@ -42,7 +42,7 @@ class Random_Forest:
 
         return Random_Forest_Train
         
-    def Test_Prediction(self, train_object, X_test, y_test):
+    def Test_Prediction(self, train_object, X_test):
         
         #Idea is to load object from training function to predict
         L_records = train_object[1]
@@ -50,11 +50,10 @@ class Random_Forest:
         L_train_pred = train_object[3]
         
         Pred = pdn.Prediction()
-        Test_Predictions = Pred.Prediction(self.x, self.y,
+        Test_Predictions = Pred.Prediction(X_test, self.y,
                                               L_records, L_root_tree_building, L_train_pred)
         
         return Test_Predictions
-          
         
         
 

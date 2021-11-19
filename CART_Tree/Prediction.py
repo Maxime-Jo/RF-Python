@@ -11,12 +11,12 @@ import time
 
 class Prediction:
     
-    def Predict(self, X_test, y_test, L_records, L_root_tree_building, L_train_pred):
+    def Predict(self, X_test, y, L_records, L_root_tree_building, L_train_pred):
         
         start = time.time()
         print("Start")
         
-        y_pred = self.Loop_Pred(X_test, y_test, L_records, L_root_tree_building, L_train_pred)
+        y_pred = self.Loop_Pred(X_test, y, L_records, L_root_tree_building, L_train_pred)
         
         end = time.time()
         print("Elalpsed time: ",str(end - start), "Seconds")
