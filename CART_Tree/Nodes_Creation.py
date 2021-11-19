@@ -111,7 +111,7 @@ class NodeSearch(bc.Best_cut):
         return y_records, root_tree_building
     
         
-    def breath_first_search(self, X, y, min_bucket = 1, max_size = 5, sample_f=None):
+    def breath_first_search(self, X, y, min_bucket = 1, max_size = 5, num_feat=None):
         
 
         y_records = np.random.randint(0,1,len(y)) + 1           # initialise tree records
@@ -132,7 +132,7 @@ class NodeSearch(bc.Best_cut):
             
             self.counter_node_visite += 1
             
-            cut, feature, cut_value, cut_type, record = self.visit_all_features(X = father_X, y = mother_y, sample_f=sample_f)
+            cut, feature, cut_value, cut_type, record = self.visit_all_features(X = father_X, y = mother_y, num_feat=num_feat)
             
             print(cut_type)
             

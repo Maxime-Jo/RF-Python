@@ -10,14 +10,6 @@ Created on Thu Sep 23 20:09:02 2021
 """
 
 """
-Variable and Target To Test Function
-"""
-
-#from sklearn.datasets import load_boston
-#X, Y = load_boston(return_X_y=True)
-#X = X[:,6]  
-
-"""
 The goal of this class is to find the best split point given a continuous feature for a decision tree using a purity index (MSE for continuous target and Gini Index for 
 categorical target used in this class). Different splitting methods used (defined in class) include:
     
@@ -56,7 +48,7 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
         self.counter_split_feature_visite = 0
         sim.MeasureOfDispersion.__init__(self)
         
-     
+    #Step 1: Splitting Function
     
     def Splitting(self,split_points): 
         split_purity = [] #Creating empty list to append split purity values
@@ -77,7 +69,7 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
         
         return min_split, best_purity
     
-    #Step 4: Calling Splitting Function in Step 2 for Different Splitting Point Strategies in Step 1
+    #Step 2: Calling Splitting Function in Step 1 for Different Splitting Point Strategies in Step 1
     ###Note to team: Can make this into one big function where user input is split type
     
     

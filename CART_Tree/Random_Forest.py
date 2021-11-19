@@ -1,7 +1,9 @@
+
 import numpy as np
-import Missing_Value as MV
-import Transform_Categorical as TC
+import Train
 import Prediction as pdn
+import Pre_Processing as PP
+import Train_Output as TO
 
 class Random_Forest:
     
@@ -9,16 +11,69 @@ class Random_Forest:
         self.X = np.array(X)
         self.y = y
         
-        # Missing Values
-        imp = MV.Missing_Value(X, cat_col)
-        imp.impute(num_method="mean", cat_method="mode")
-      
-        self.X = imp.data.transpose()
+        #Pre-process Data
+        pre_process = PP.process()
+        self.x = pre_process.process(self.X, cat_col)
+        
+    
+    def Train(self, num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4):
+        
+        
+        #Trainign model
+        train = Train.Train()
+        L_records, L_root_tree_building, L_train_pred =  train.RF_Train(self.x, self.y, 
+                                                                        sample_f = num_feat, 
+                                                                        n_tree = n_tree, 
+                                                                        sample_n = sample_n,
+                                                                        min_bucket=min_bucket, 
+                                                                        max_size = max_size)
+        
+        #Making Training Predictions
+        Pred = pdn.Prediction()
+        Train_Predictions = Pred.Prediction(self.x, self.y,
+                                            L_records, L_root_tree_building, L_train_pred)
+        
+        
+        #Output Object
+        Output = TO.Train_Output()
+        Random_Forest_Train = Output.Output_Object(self.y, Train_Predictions, L_root_tree_building, L_records, 
+                                                   L_train_pred, n_tree, num_feat)
+        
 
-        # Transform Categorical
-        CatTo = TC.CatTo        
-        for c in cat_col:
-            self.X[:,c], _ = CatTo.FrequencyEncoding(self.X[:,c])     # TO-DO "_"
+        return Random_Forest_Train
+        
+    def Test_Prediction(self, train_object, X_test, y_test):
+        
+        #Idea is to load object from training function to predict
+        L_records = train_object[1]
+        L_root_tree_building = train_object[2]
+        L_train_pred = train_object[3]
         
         Pred = pdn.Prediction()
-        Train_Predictions, Test_Predictions = Pred.Test_Prediction(self.X, self.y, self.X, self.y)    
+        Test_Predictions = Pred.Prediction(self.x, self.y,
+                                              L_records, L_root_tree_building, L_train_pred)
+        
+        return Test_Predictions
+          
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -48,7 +48,7 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
         nc.NodeSearch.__init__(self)
     
     
-    def CART_Train(self,X, y, sample_f = None, 
+    def CART_Train(self,X, y, num_feat = None, 
                  sample_n = None,
                  min_bucket=5, max_size = 6, 
                  strategy=None, bins = None):
@@ -78,18 +78,45 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
         #y_records, root_tree_building = NS.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
         #                                                       max_size = max_size, sample_f=sample_f)
         y_records, root_tree_building = self.breath_first_search(X_sample, y_sample, min_bucket=min_bucket,
-                                                               max_size = max_size, sample_f=sample_f)
+                                                               max_size = max_size, num_feat=num_feat)
         
-        return y_records, root_tree_building
+        y_pred = self.Tree_Prediction(y_records, y_sample)
+        
+        return y_records, root_tree_building, y_pred
     
     
-    def RF_Train(self, X, y, sample_f = 3, 
+    def Tree_Prediction(self, y_records, y):
+        
+        y_last = y_records[:,y_records.shape[1]-1]
+        y_pred = y.copy()
+        
+        tree_nodes = np.unique(y_last)
+                
+        for n in tree_nodes:
+            print(n)
+                        
+            if y.dtype == 'bool':  # if boolean --> majority vote
+                sum_pred = y[y_pred==n].sum()   # sum = value of the yes
+                len_pred = len(y[y_pred==n])    # size of the pool
+            
+                if sum_pred > len_pred/2:       # if value of yes are majority then 1 otherwise 0
+                    y_pred[y_pred==n] = 1
+            
+                else: y_pred[y_pred==n] = 0
+            
+            else:    
+                y_pred[y_last==n] = y[y_last==n].mean()
+        
+        return y_pred      
+    
+    def RF_Train(self, X, y, num_feat = 3, 
                  n_tree = 1, sample_n = None,
                  min_bucket=1, max_size = 6, cores = 1, 
                  strategy=None, bins = None):
         
         L_records = []
         L_root_tree_building = []
+        L_train_pred = []
         
         cores = min(cores, multiprocessing.cpu_count()-1)
         
@@ -101,28 +128,30 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
                     
                     
                     """ Get tree """
-                    y_records, root_tree_building = self.CART_Train(X, y, sample_f = sample_f, 
+                    y_records, root_tree_building, y_pred = self.CART_Train(X, y, num_feat = num_feat, 
                                                                     sample_n = sample_n,
                                                                     min_bucket=min_bucket, max_size = max_size,
                                                                     strategy=strategy, bins = bins)
-            
+                
                     """ Append results """
                     L_records.append(y_records)
                     L_root_tree_building.append(root_tree_building)
+                    L_train_pred.append(y_pred)
                     
             
         else:            
-            processed_list = Parallel(n_jobs=cores)(delayed(self.CART_Train)(X, y, sample_f = sample_f, 
+            processed_list = Parallel(n_jobs=cores)(delayed(self.CART_Train)(X, y, num_feat = num_feat, 
                                                                     sample_n = sample_n,
                                                                     min_bucket=min_bucket, max_size = max_size,
                                                                     strategy=strategy, bins = bins) for i in range(0,n_tree))
             
             for tree in processed_list:
-                y_records, root_tree_building = tree
+                y_records, root_tree_building, y_pred = tree
     
                 """ Append results """
                 L_records.append(y_records)
                 L_root_tree_building.append(root_tree_building)
+                L_train_pred.append(y_pred)
                 
                 
         print("#######################")
@@ -136,15 +165,15 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
         print("Nb of evaluated MoD: ", str(train.counter_MoD))
             
                 
-        return L_records, L_root_tree_building
+        return L_records, L_root_tree_building, L_train_pred
     
     
     
 # test
-# train = Train()
+#train = Train()
 
 
-# L_records, L_root_tree_building =  train.RF_Train(X, y, sample_f = 3, 
+# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
 #                                                     n_tree = 100, sample_n = 0.8,
 #                                                     min_bucket=5, max_size = 5, cores = 1,
 #                                                     strategy=None, bins =None)
