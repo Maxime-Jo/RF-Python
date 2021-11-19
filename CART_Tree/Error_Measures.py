@@ -5,9 +5,6 @@ Created on Thu Nov 18 23:04:55 2021
 @author: tyler
 """
 
-#import math library
-import math
-
 
 #Can possibly add more
 
@@ -30,6 +27,6 @@ class Error_Measures:
                 
     #Mean-Squared Error
     def MSE(y_pred, y):
-            mse = math.sqrt(sum((y-y_pred)**2))
+            mse = (sum((y-y_pred)**2))**0.5
         
             return mse

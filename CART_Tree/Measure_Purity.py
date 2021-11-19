@@ -35,6 +35,8 @@ import numpy as np
 
 class MeasureOfDispersion:
     
+
+    
     def Gini_Index (self, y):
         
         n = len(y)

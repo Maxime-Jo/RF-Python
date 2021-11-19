@@ -12,20 +12,19 @@ Created on Thu Nov 18 23:55:16 2021
 
 import Error_Measures as EM
 
-class Train_Output:
+class Train_Output(EM.Error_Measures):
     
-    def Output_Object(y, Train_Predictions, L_root_tree_building, L_records, L_train_pred, n_tree, num_feat):
+    def Output_Object(self, y, Train_Predictions, L_root_tree_building, L_records, L_train_pred, n_tree, num_feat):
         
         #Output Object of Train Function
         random_forest_train = []
         
         #Error Rate
-        measures = EM.Error_Measures()
         if y.dtype == 'bool':
-            MSE = measures.Missclasification(Train_Predictions, y)
+            MSE = self.Missclasification(Train_Predictions, y)
             random_forest_train.append(MSE)
         else:
-            Missclassification_Rate = measures.MSE(Train_Predictions, y)
+            Missclassification_Rate = self.MSE(Train_Predictions, y)
             random_forest_train.append(Missclassification_Rate)
         
         

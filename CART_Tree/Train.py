@@ -34,7 +34,7 @@ Output:
 
 import Nodes_Creation as nc
 import numpy as np
-import Reduce_n_complexity as rc
+import Binning as rc
 import multiprocessing
 from joblib import Parallel, delayed
 
@@ -158,11 +158,11 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
         print("TRAINING DONE")
         print("#######################")
         
-        print("Nb of trees: ", str(train.counter_tree_visite))
-        print("Nb of evaluated nodes: ", str(train.counter_node_visite))
-        print("Nb of evaluated feature: ", str(train.counter_feature_visite))
-        print("Nb of evaluated split: ", str(train.counter_split_feature_visite))
-        print("Nb of evaluated MoD: ", str(train.counter_MoD))
+        # print("Nb of trees: ", str(train.counter_tree_visite))
+        # print("Nb of evaluated nodes: ", str(train.counter_node_visite))
+        # print("Nb of evaluated feature: ", str(train.counter_feature_visite))
+        # print("Nb of evaluated split: ", str(train.counter_split_feature_visite))
+        # print("Nb of evaluated MoD: ", str(train.counter_MoD))
             
                 
         return L_records, L_root_tree_building, L_train_pred
@@ -173,10 +173,10 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
 #train = Train()
 
 
-# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, sample_f = 3, 
-#                                                     n_tree = 100, sample_n = 0.8,
-#                                                     min_bucket=5, max_size = 5, cores = 1,
-#                                                     strategy=None, bins =None)
+#L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, num_feat = 3, 
+                                                     # n_tree = 20, sample_n = 0.8,
+                                                     # min_bucket=5, max_size = 5, cores = 1,
+                                                     # strategy=None, bins =None)
 
 
 

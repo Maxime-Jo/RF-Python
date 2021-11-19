@@ -38,6 +38,7 @@ class Prediction:
                     
                     y_records = np.zeros((len(y),len(root_tree_building_train)))
                     y_records[:,0] = np.random.randint(0,1,len(y)) + 1  
+      
                     
                     for k in range(1, len(root_tree_building_train)):
                     
@@ -50,20 +51,18 @@ class Prediction:
                         child_2 = child_1 + 1
                         m = k-1
                         
-                        for i in range(0,len(y)):
-                    
-                            if y_records[i,m] == node_cut:
-                                
-                                if X[i, feature] <= cut_value:
-                                    y_records[i,k] = child_1
-                                    
-                                else:
-                                    y_records[i,k] = child_2       
-                            else:
-                                y_records[i,k] = y_records[i,m]
+                        boolean_child_1 = np.logical_and(X[:, feature] <= cut_value,
+                                                 y_records[:,m]==node_cut)
+                        boolean_child_2 = np.logical_and(X[:, feature] > cut_value,
+                                                 y_records[:,m]==node_cut)
+                        
+                        y_records[:,k] =  y_records[:,m]
+                        y_records[boolean_child_1, k] = child_1
+                        y_records[boolean_child_2, k] = child_2
                
                     y_test_pred = np.zeros((len(y))) 
                     
+                    #Simplify function ()
                     for m in range(0, len(train_terminal_pred)):
                         for j in range(0,len(y_records)):
                             if y_records[j,-1] == train_terminal_pred[m, 1]:
@@ -75,6 +74,18 @@ class Prediction:
         y_pred = y_pred.mean(axis=1) 
         
         return y_pred
-    
+
+#Sanity check to see if middle boolean function
+#np.unique()
+
+
+
+
+
+
+
+
+
+
 
     
