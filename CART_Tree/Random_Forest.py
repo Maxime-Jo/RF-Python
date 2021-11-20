@@ -1,63 +1,53 @@
-
-import numpy as np
-import Train
+import Train as trn
 import Prediction as pdn
 import Pre_Processing as PP
 import Train_Output as TO
 
-class Random_Forest(PP.process, pdn.Prediction):
+class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Output):
     
-    def __init__(self, X, y, cat_col):
-        self.X = np.array(X)
-        self.y = y
-        self.cat_col = cat_col
+    def __init__(self):
+        #self.cat_col = None
+        #self.cat_rec = None
+        PP.Pre_Processing.__init__(self)
+        trn.Train.__init__(self)
+    
+    def Fit(self, X, y, cat_col = None, num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4):
         
         #Pre-process Data
-        self.x = self.process(self.X, self.cat_col)
-        
-    
-    def Fit(self, num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4):
-        
+        x = self.Process_Train(X, num_method="mean", cat_method="mode", cat_col=cat_col)
         
         #Training Model
-        train = Train.Train()
-        L_records, L_root_tree_building, L_train_pred =  train.RF_Train(self.x, self.y, 
-                                                                        sample_f = num_feat, 
-                                                                        n_tree = n_tree, 
-                                                                        sample_n = sample_n,
-                                                                        min_bucket=min_bucket, 
-                                                                        max_size = max_size)
-        
+        L_records, L_root_tree_building, L_train_pred =  self.RF_Train(x, y, 
+                                                                       num_feat = num_feat, 
+                                                                       n_tree = n_tree, 
+                                                                       sample_n = sample_n,
+                                                                       min_bucket = min_bucket, 
+                                                                       max_size = max_size,
+                                                                       cores = 1)
+   
         #Making Training Predictions
-        Train_Predictions = self.Prediction(self.x, self.y,
-                                            L_records, L_root_tree_building, L_train_pred)
-        
+        Train_Predictions = self.Predict(x, y, L_records, L_root_tree_building, L_train_pred)
         
         #Output Object
-        Output = TO.Train_Output()
-        Random_Forest_Train = Output.Output_Object(self.y, Train_Predictions, L_root_tree_building, L_records, 
-                                                   L_train_pred, 
-                                                   self.cat_col,
-                                                   n_tree, num_feat)
+        Random_Forest_Train = self.Output_Object(y, Train_Predictions, 
+                                                 L_root_tree_building, L_records,
+                                                 L_train_pred, n_tree, num_feat) #cat_col?
         
-
         return Random_Forest_Train
         
-    def Test_Prediction(self, train_object, X_test): #Remove cat_col
+    def Test_Prediction(self, model, X_test): #Remove cat_col
         
         #Pre-Process Data
-        self.x = self.process(X_test, self.cat_col)
+        # should use self.cat_rec to encode here, but how??
+        x_test = self.Process_Test(X_test)
         
         #Idea is to load object from training function to predict
-        L_records = train_object[1]
-        L_root_tree_building = train_object[2]
-        L_train_pred = train_object[3]
+        L_records = model.get('Node_assignments')
+        L_root_tree_building = model.get('Forest')
+        L_train_pred = model.get('Train_predictions')
         
-        Pred = pdn.Prediction()
-        Test_Predictions = Pred.Prediction(X_test, self.y,
-                                              L_records, L_root_tree_building, L_train_pred)
-        
-        
+        Test_Predictions = self.Predict(x_test, y, L_records, L_root_tree_building, L_train_pred)
+
         return Test_Predictions
           
         
@@ -66,7 +56,12 @@ class Random_Forest(PP.process, pdn.Prediction):
 
 
 
+from sklearn.datasets import load_boston
+X, y = load_boston(return_X_y=True)
 
+rf = Random_Forest()
+train_object = rf.Fit(X,y,[8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
+pred = rf.Test_Prediction(train_object, X)
 
 
 

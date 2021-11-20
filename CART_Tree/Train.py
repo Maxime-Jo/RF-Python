@@ -34,7 +34,7 @@ Output:
 
 import Nodes_Creation as nc
 import numpy as np
-import Binning as rc
+import Reduce_n_complexity as rc
 import multiprocessing
 from joblib import Parallel, delayed
 

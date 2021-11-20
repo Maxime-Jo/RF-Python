@@ -12,7 +12,7 @@ Created on Thu Nov 18 23:04:55 2021
 class Error_Measures:
 
     #Error Rate
-    def Missclasification(y_pred, y):
+    def Missclasification(self, y_pred, y):
             missclassified = []
             for i in range(0,len(y)):
                 
@@ -26,7 +26,7 @@ class Error_Measures:
             return error_rate
                 
     #Mean-Squared Error
-    def MSE(y_pred, y):
+    def MSE_Pred(self, y_pred, y):
             mse = (sum((y-y_pred)**2))**0.5
         
             return mse

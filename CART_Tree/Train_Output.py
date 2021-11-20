@@ -17,30 +17,23 @@ class Train_Output(EM.Error_Measures):
     def Output_Object(self, y, Train_Predictions, L_root_tree_building, L_records, L_train_pred, n_tree, num_feat):
         
         #Output Object of Train Function
-        random_forest_train = []
         
         #Error Rate
         if y.dtype == 'bool':
-            MSE = self.Missclasification(Train_Predictions, y)
-            random_forest_train.append(MSE)
+            error = self.Missclasification(Train_Predictions, y)
+            err_type = "Missclassification Rate"
         else:
-            Missclassification_Rate = self.MSE(Train_Predictions, y)
-            random_forest_train.append(Missclassification_Rate)
+            error = self.MSE_Pred(Train_Predictions, y)
+            err_type = "MSE"
         
-        
-        #Naming items in output object
-        Forest = L_root_tree_building
-        Node_assignments = L_records
-        Tree_predictions = L_train_pred
-        Trees = n_tree
-        Features = num_feat
-        
-        #Appending to output object
-        random_forest_train.append(Train_Predictions)
-        random_forest_train.append(Forest)
-        random_forest_train.append(Node_assignments)
-        random_forest_train.append(Tree_predictions)
-        random_forest_train.append(Trees)
-        random_forest_train.append(Features)
+        random_forest_train = {
+            "Train_error" : error,
+            "Train_error_type" : err_type,
+            "Forest" : L_root_tree_building,
+            "Node_assignments" : L_records,
+            "Train_predictions" : L_train_pred,
+            "nTrees" : n_tree,
+            "nFeatures" : num_feat
+        }
         
         return random_forest_train

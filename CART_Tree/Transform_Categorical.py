@@ -76,7 +76,7 @@ class CatTo:
     
     
     
-    def TargetEncoding(self,feature ,y , prior = 30):                   # https://maxhalford.github.io/blog/target-encoding/
+    def TargetEncoding(self, feature, y, prior = 30):                   # https://maxhalford.github.io/blog/target-encoding/
         cat = np.unique(feature)
         y_mean = y.mean()
         
@@ -102,7 +102,7 @@ class CatTo:
     
     
     
-    def FrequencyEncoding(self,feature , prior = 30):                   
+    def FrequencyEncoding(self, feature, prior = 30):                   
         cat = np.unique(feature)
         
         n = len(feature)
@@ -127,7 +127,14 @@ class CatTo:
             
         return frq_enc, cat_rec      
         
-     
+    def Encode_by_mapping(self, feature, cat_mapping):
+        enc = np.array(feature)
+        
+        for i in range(len(cat_mapping)):
+            enc[feature==cat_mapping[i,0]] = cat_mapping[i,1]
+            enc = enc.astype(float)
+             
+        return enc
     
 
     
@@ -141,6 +148,7 @@ Test the class output
 # test_Trg, test2_Trg = CatTo.TargetEncoding(feature,y)
 # test_Frq, test2_Frq = CatTo.FrequencyEncoding(feature)
 
+# test = CatTo.Encode_by_mapping(feature, test2_Trg)
 
 #######
 # k-fold for tree and leave?

@@ -4,20 +4,41 @@ Created on Thu Nov 18 18:59:03 2021
 
 @author: tyler
 """
-
 import Missing_Value as MV
 import Transform_Categorical as TC
 
-class Pre_Processing:
+class Pre_Processing(TC.CatTo):
     
-   def Process(self, X, cat_col): 
+    def __init__(self):
+        self.cat_mapping = None
+        self.cat_col = None
+        self.num_method = None
+        self.cat_method = None
+    
+    def Process_Train(self, X, num_method, cat_method, cat_col=None): 
+        
+        self.cat_col = cat_col
+        
         # Missing Values
-        imp = MV.Missing_Value(X, cat_col)
-        imp.impute(num_method="mean", cat_method="mode")
+        imp = MV.Missing_Value(X, self.cat_col)
+        imp.impute(num_method=num_method, cat_method=cat_method)
       
-        X = imp.data.transpose()
+        imp_X = imp.data.transpose()
 
         # Transform Categorical
-        CatTo = TC.CatTo        
-        for c in cat_col:
-            self.X[:,c], _ = CatTo.FrequencyEncoding(self.X[:,c])     # TO-DO "_"
+        for c in self.cat_col:
+            imp_X[:,c], self.cat_mapping = self.FrequencyEncoding(imp_X[:,c])
+        return imp_X
+    
+    def Process_Test(self, X): 
+       
+        # Missing Values
+        imp = MV.Missing_Value(X, self.cat_col)
+        imp.impute(num_method=self.num_method, cat_method=self.cat_method)
+      
+        imp_X = imp.data.transpose()
+
+        # Transform Categorical
+        for c in self.cat_col:
+            imp_X[:,c] = self.Encode_by_mapping(imp_X[:,c], self.cat_mapping)
+        return imp_X
