@@ -11,19 +11,19 @@ import time
 
 class Prediction:
     
-    def Predict_y(self, X_test, y, L_records, L_root_tree_building, L_train_pred):
+    def Predict_y(self, X_test, L_records, L_root_tree_building, L_train_pred):
         
         start = time.time()
         print("Start")
         
-        y_pred = self.Loop_Pred(X_test, y, L_records, L_root_tree_building, L_train_pred)
+        y_pred = self.Loop_Pred(X_test, L_records, L_root_tree_building, L_train_pred)
         
         end = time.time()
         print("Elalpsed time: ",str(end - start), "Seconds")
         
         return y_pred
                     
-    def Loop_Pred(self, X, y, L_records, L_root_tree_building, L_train_pred):
+    def Loop_Pred(self, X, L_records, L_root_tree_building, L_train_pred):
         
         y_pred = []
         
@@ -36,8 +36,8 @@ class Prediction:
                     train_terminal_pred = np.column_stack([y_train_pred, y_records_train[:,-1]])
                     train_terminal_pred = np.unique(train_terminal_pred, axis = 0)
                     
-                    y_records = np.zeros((len(y),len(root_tree_building_train)))
-                    y_records[:,0] = np.random.randint(0,1,len(y)) + 1  
+                    y_records = np.zeros((len(X),len(root_tree_building_train)))
+                    y_records[:,0] = np.random.randint(0,1,len(X)) + 1  
       
                     
                     for k in range(1, len(root_tree_building_train)):
@@ -60,7 +60,7 @@ class Prediction:
                         y_records[boolean_child_1, k] = child_1
                         y_records[boolean_child_2, k] = child_2
                
-                    y_test_pred = np.zeros((len(y))) 
+                    y_test_pred = np.zeros((len(X))) 
                     
                     #Simplify function ()
                     for m in range(0, len(train_terminal_pred)):
@@ -74,16 +74,6 @@ class Prediction:
         y_pred = y_pred.mean(axis=1) 
         
         return y_pred
-
-#Sanity check to see if middle boolean function
-#np.unique()
-
-
-
-
-
-
-
 
 
 
