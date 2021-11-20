@@ -18,10 +18,12 @@ class Pre_Processing(TC.CatTo):
     def Process_Train(self, X, num_method, cat_method, cat_col=None): 
         
         self.cat_col = cat_col
+        self.num_method = num_method
+        self.cat_method = cat_method
         
         # Missing Values
         imp = MV.Missing_Value(X, self.cat_col)
-        imp.impute(num_method=num_method, cat_method=cat_method)
+        imp.impute(self.num_method, self.cat_method)
       
         imp_X = imp.data.transpose()
 
@@ -34,7 +36,7 @@ class Pre_Processing(TC.CatTo):
        
         # Missing Values
         imp = MV.Missing_Value(X, self.cat_col)
-        imp.impute(num_method=self.num_method, cat_method=self.cat_method)
+        imp.impute(self.num_method, self.cat_method)
       
         imp_X = imp.data.transpose()
 

@@ -31,14 +31,13 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         #Output Object
         Random_Forest_Train = self.Output_Object(y, Train_Predictions, 
                                                  L_root_tree_building, L_records,
-                                                 L_train_pred, n_tree, num_feat) #cat_col?
+                                                 L_train_pred, n_tree, num_feat)
         
         return Random_Forest_Train
         
-    def Test_Prediction(self, model, X_test): #Remove cat_col
+    def Test_Prediction(self, model, X_test, y):
         
         #Pre-Process Data
-        # should use self.cat_rec to encode here, but how??
         x_test = self.Process_Test(X_test)
         
         #Idea is to load object from training function to predict
@@ -56,12 +55,12 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
 
 
 
-from sklearn.datasets import load_boston
-X, y = load_boston(return_X_y=True)
+# from sklearn.datasets import load_boston
+# X, y = load_boston(return_X_y=True)
 
-rf = Random_Forest()
-train_object = rf.Fit(X,y,[8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
-pred = rf.Test_Prediction(train_object, X)
+# rf = Random_Forest()
+# train_object = rf.Fit(X,y,[8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
+# pred = rf.Test_Prediction(train_object, X)
 
 
 

@@ -19,5 +19,8 @@ data['ST_EMPL'] = data['ST_EMPL'].map({'R':0, 'T':1, 'P':2})
 X = np.array(data.drop(columns=["ID_TRAIN","TYP_FIN"]))
 y = credit[target_name[0]]
 
-rf = RF.Random_Forest(X,y,cat_col=[7,8])
-test = rf.X
+
+rf = RF.Random_Forest()
+rf_model = rf.Fit(X,y,cat_col=[7,8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
+pred = rf.Test_Prediction(rf_model, X,y)
+
