@@ -35,6 +35,8 @@ import numpy as np
 
 class MeasureOfDispersion:
     
+    def __init__ (self):
+        self.counter_MoD = 0
 
     
     def Gini_Index (self, y):
@@ -61,6 +63,8 @@ class MeasureOfDispersion:
         return wgt_avg
     
     def MeasureOfDispersion (self, y1, y2):
+        
+        self.counter_MoD += 1
         
         if len(y2) == 0:                                            # in case we want to calculate for only one vector
             if y1.dtype == 'bool':                
