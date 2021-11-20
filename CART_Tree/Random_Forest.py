@@ -11,7 +11,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         PP.Pre_Processing.__init__(self)
         trn.Train.__init__(self)
     
-    def Fit(self, X, y, cat_col = None, num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4):
+    def Fit(self, X, y, cat_col = None, num_feat = 3, n_tree = 4, sample_n = 0.8, min_bucket=5, max_size = 4, strategy=None, bins = None, cores = 1):
         
         #Pre-process Data
         x = self.Process_Train(X, num_method="mean", cat_method="mode", cat_col=cat_col)
@@ -23,7 +23,9 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
                                                                        sample_n = sample_n,
                                                                        min_bucket = min_bucket, 
                                                                        max_size = max_size,
-                                                                       cores = 1)
+                                                                       strategy=strategy, 
+                                                                       bins = bins,
+                                                                       cores = cores)
    
         #Making Training Predictions
         Train_Predictions = self.Predict(x, y, L_records, L_root_tree_building, L_train_pred)
@@ -35,7 +37,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         
         return Random_Forest_Train
         
-    def Test_Prediction(self, model, X_test, y):
+    def Predict(self, model, X_test, y):
         
         #Pre-Process Data
         x_test = self.Process_Test(X_test)
@@ -45,7 +47,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         L_root_tree_building = model.get('Forest')
         L_train_pred = model.get('Train_predictions')
         
-        Test_Predictions = self.Predict(x_test, y, L_records, L_root_tree_building, L_train_pred)
+        Test_Predictions = self.Predict_y(x_test, y, L_records, L_root_tree_building, L_train_pred)
 
         return Test_Predictions
           
@@ -55,12 +57,19 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
 
 
 
-# from sklearn.datasets import load_boston
-# X, y = load_boston(return_X_y=True)
+from sklearn.datasets import load_boston
+X, y = load_boston(return_X_y=True)
 
-# rf = Random_Forest()
-# train_object = rf.Fit(X,y,[8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
-# pred = rf.Test_Prediction(train_object, X)
+rf = Random_Forest()
+train_object = rf.Fit(X,y,[8], num_feat = 3, n_tree = 100, sample_n = 0.8, min_bucket=5, max_size = 4, strategy=None, bins = None, cores = 1)
+pred = rf.Predict(train_object, X)
+
+
+print("Nb of trees: ", str(rf.counter_tree_visite))
+print("Nb of evaluated nodes: ", str(rf.counter_node_visite))
+print("Nb of evaluated feature: ", str(rf.counter_feature_visite))
+print("Nb of evaluated split: ", str(rf.counter_split_feature_visite))
+print("Nb of evaluated MoD: ", str(rf.counter_MoD))
 
 
 
