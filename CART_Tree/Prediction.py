@@ -11,7 +11,7 @@ import time
 
 class Prediction:
     
-    def Predict(self, X_test, y, L_records, L_root_tree_building, L_train_pred):
+    def Predict_y(self, X_test, y, L_records, L_root_tree_building, L_train_pred):
         
         start = time.time()
         print("Start")
