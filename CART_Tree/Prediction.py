@@ -27,7 +27,7 @@ class Prediction:
         
         y_pred = []
         
-        for v in range(0, len(L_records)-1):
+        for v in range(0, len(L_records)):
         
                     y_records_train = L_records[v]
                     root_tree_building_train = L_root_tree_building[v]
@@ -78,4 +78,4 @@ class Prediction:
 
 
 
-    
+
