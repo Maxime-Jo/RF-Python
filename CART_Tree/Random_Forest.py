@@ -6,8 +6,6 @@ import Train_Output as TO
 class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Output):
     
     def __init__(self):
-        #self.cat_col = None
-        #self.cat_rec = None
         PP.Pre_Processing.__init__(self)
         trn.Train.__init__(self)
     
@@ -37,7 +35,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         
         return Random_Forest_Train
         
-    def Predict(self, model, X_test): #Remove y
+    def Predict(self, model, X_test, cores=1):
         
         #Pre-Process Data
         x_test = self.Process_Test(X_test)
@@ -48,7 +46,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         L_train_pred = model.get('Train_predictions')
 
         
-        Test_Predictions = self.Predict_y(x_test, L_records, L_root_tree_building, L_train_pred)
+        Test_Predictions = self.Predict_y(x_test, L_records, L_root_tree_building, L_train_pred, cores)
 
         return Test_Predictions
           
@@ -102,7 +100,7 @@ train_object = rf.Fit(X,y,[], num_feat = int((X.shape[1]**0.5)), n_tree = 100,
                       sample_n = 0.8, min_bucket=5, max_size = 4, 
                       strategy= "quant" , bins = 20, cores = 1)
 #Prediction
-pred = rf.Predict(train_object, X)
+pred = rf.Predict(train_object, X, cores = 1)
 pred[pred<=0.5] = 0
 pred[pred>0.5] = 1
 pred = pred.astype(bool)
@@ -114,8 +112,8 @@ sk_rf = regr.fit(X, y)
 sk_predict = sk_rf.predict(X)
 
 
-rf.Missclasification(pred, y)
-rf.Missclasification(sk_predict, y)
+print(rf.Missclasification(pred, y))
+print(rf.Missclasification(sk_predict, y))
 
 
 # load dataset
