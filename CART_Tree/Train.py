@@ -87,12 +87,17 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
     
     def Tree_Prediction(self, y_records, y):
         
-        y_last = y_records[:,y_records.shape[1]-1]
+        y_last = y_records[:,-1]
         y_pred = y.copy()
         
         tree_nodes = np.unique(y_last)
+        
+        print("#######################")
+        print("Predict: ")
+        print("#######################")
                 
         for n in tree_nodes:
+
             print(n)
                         
             if y.dtype == 'bool':  # if boolean --> majority vote
@@ -169,16 +174,19 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
     
     
     
-# test
+## test
 #train = Train()
 
 
-#L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, num_feat = 3, 
-                                                     # n_tree = 20, sample_n = 0.8,
-                                                     # min_bucket=5, max_size = 5, cores = 1,
-                                                     # strategy=None, bins =None)
+# L_records, L_root_tree_building, L_train_pred =  train.RF_Train(X, y, num_feat = 3, 
+#                                                       n_tree = 20, sample_n = 0.8,
+#                                                       min_bucket=5, max_size = 5, cores = 1,
+#                                                       strategy=None, bins =None)
 
 
+## Load data
+#from sklearn.datasets import load_breast_cancer
+#X, y = load_breast_cancer(return_X_y=True)
 
 
 
