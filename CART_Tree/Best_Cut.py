@@ -46,7 +46,10 @@ class Best_cut(split.Best_Splitting_Point):
         
         root_purity = self.MeasureOfDispersion(y,[])
         
-        self.splits_evaluation = np.array([[len(y),np.nan,root_purity, -1]])    # ensure that previous split is not better
+        best_feature = -1
+        best_cut_value = np.nan
+        best_purity = root_purity  
+        best_cut = len(y)
         
         if num_feat == None:
             num_feat = X.shape[1]
@@ -64,41 +67,22 @@ class Best_cut(split.Best_Splitting_Point):
             x = X[:,f] # create a vector
             
             cut_value, purity  = self.All_Points(x, y)
+                       
+            if purity < best_purity:
+                best_purity = purity
+                best_cut_value = cut_value
+                best_feature = f
+                best_cut = len(y[x<=cut_value])
             
-            x_left = x[x<=cut_value]
-            
-            cut = len(x_left)
-            
-            self.splits_evaluation = np.concatenate((self.splits_evaluation, [[cut, cut_value, purity, f]]),0)
-            
-        # BEST PURITY  
-        best_purity = np.min(self.splits_evaluation[:,2])
-        binary_filter_puriy = self.splits_evaluation[:,2] == best_purity
-        # BEST CUT ON PURITY
-        """ it may exist multiple best purity"""
-        f_tmp = self.splits_evaluation[binary_filter_puriy,3].min()   
-        binary_filter_feature = self.splits_evaluation[:,3] == f_tmp
-        # FINAL SELECTED CUT
-        binary_filter = np.logical_and(binary_filter_puriy, binary_filter_feature)
-        
-        if binary_filter.sum() > 1:
-            print("ATTENTION MULTIPLE BEST PURITY")
-            print(self.splits_evaluation)
-        elif binary_filter.sum() ==0:
-            print("ATTENTION NO BEST PURITY")
-               
-        cut_value = self.splits_evaluation[binary_filter,1][0]
-        feature = self.splits_evaluation[binary_filter, 3][0]
-        
-        record = X[:,int(feature)]<=cut_value
+        record = X[:,int(best_feature)]<=best_cut_value
         record = abs(record.astype(int)-1)
         
-        if feature == -1:
+        if best_feature == -1:
             cut_type = "root"
         else:
             cut_type = "ok"
 
-        return cut, feature, cut_value, cut_type, record
+        return best_cut, best_feature, best_cut_value, cut_type, record
             
 
 
@@ -106,13 +90,14 @@ class Best_cut(split.Best_Splitting_Point):
 test
 """
 
-# BC = Best_cut()
+#BC = Best_cut()
 
 
-# cut, feature, cut_value, cut_type, record = BC.visit_all_features(X,y)
+#cut, feature, cut_value, cut_type, record = BC.visit_all_features(X,y)
 
-
-
+#t = BC.splits_evaluation
+#x1 = BC.x
+#y1 = BC.y
 # X_1 = X[X[:,5]<=6.939,:]
 # y_1 = y[X[:,5]<=6.939]
 # cut, feature, cut_value, cut_type, record = BC.visit_all_features(X_1,y_1)
