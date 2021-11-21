@@ -31,7 +31,6 @@ Output:
 """
 The Class itself
 """
-import numpy as np
 
 class MeasureOfDispersion:
     
@@ -67,7 +66,7 @@ class MeasureOfDispersion:
         self.counter_MoD += 1
         
         if len(y2) == 0:                                            # in case we want to calculate for only one vector
-            if y1.dtype == 'bool':                
+            if y1.dtype == 'bool'  :              
                 out = self.Gini_Index(y1)                           # gini index
             else:
                 out = self.MSE(y1)                                  # Mean Sqaured Error
