@@ -98,19 +98,8 @@ class Train(rc.Reduce_Complexity,nc.NodeSearch) :
                 
         for n in tree_nodes:
 
-            print(n)
-                        
-            if y.dtype == 'bool':  # if boolean --> majority vote
-                sum_pred = y[y_pred==n].sum()   # sum = value of the yes
-                len_pred = len(y[y_pred==n])    # size of the pool
-            
-                if sum_pred > len_pred/2:       # if value of yes are majority then 1 otherwise 0
-                    y_pred[y_pred==n] = 1
-            
-                else: y_pred[y_pred==n] = 0
-            
-            else:    
-                y_pred[y_last==n] = y[y_last==n].mean()
+            print(n) 
+            y_pred[y_last==n] = y[y_last==n].mean()
         
         return y_pred      
     
