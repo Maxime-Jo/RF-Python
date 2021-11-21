@@ -114,7 +114,7 @@ class NodeSearch(bc.Best_cut):
     def breath_first_search(self, X, y, min_bucket = 1, max_size = 5, num_feat=None):
         
 
-        y_records = np.random.randint(0,1,len(y)) + 1           # initialise tree records
+        y_records = np.ones(len(y)).astype(int)            # initialise tree records
         y_records = np.transpose(np.array([y_records]))
         
         node_level = 1                                           # initialise tree level        
