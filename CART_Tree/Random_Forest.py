@@ -46,6 +46,7 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
         L_records = model.get('Node_assignments')
         L_root_tree_building = model.get('Forest')
         L_train_pred = model.get('Train_predictions')
+
         
         Test_Predictions = self.Predict_y(x_test, L_records, L_root_tree_building, L_train_pred)
 
@@ -85,7 +86,39 @@ class Random_Forest(PP.Pre_Processing, trn.Train, pdn.Prediction, TO.Train_Outpu
 # rf.MSE_Pred(pred, y)
 # rf.MSE_Pred(sk_predict, y)
 
-# # load dataset
+
+
+
+
+
+# Load data
+from sklearn.datasets import load_breast_cancer
+X, y = load_breast_cancer(return_X_y=True)
+y = y.astype(bool)
+#Load Random Forest Module
+rf = Random_Forest()
+#Train
+train_object = rf.Fit(X,y,[], num_feat = int((X.shape[1]**0.5)), n_tree = 100, 
+                      sample_n = 0.8, min_bucket=5, max_size = 4, 
+                      strategy= "quant" , bins = 20, cores = 1)
+#Prediction
+pred = rf.Predict(train_object, X)
+pred[pred<=0.5] = 0
+pred[pred>0.5] = 1
+pred = pred.astype(bool)
+
+#Testing with Scikit learn
+from sklearn.ensemble import RandomForestClassifier
+regr = RandomForestClassifier(max_depth=4, random_state=0)
+sk_rf = regr.fit(X, y)
+sk_predict = sk_rf.predict(X)
+
+
+rf.Missclasification(pred, y)
+rf.Missclasification(sk_predict, y)
+
+
+# load dataset
 # import pandas as pd
 # import numpy as np
 
