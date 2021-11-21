@@ -50,22 +50,22 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
         
     #Step 1: Splitting Function
     
-    def Splitting(self,split_points): 
-        split_purity = [] #Creating empty list to append split purity values
+    def Splitting(self): 
+
+        best_purity = float('inf')
         
-        for s in split_points: #Loops over length of possible split points
+        for s in self.split_points: #Loops over length of possible split points
         
             self.counter_split_feature_visite += 1
         
-            lower = self.data[self.data[:,0]<=s,:]
-            upper = self.data[self.data[:,0]>s,:]
-        
-            split_purity.append(self.MeasureOfDispersion(lower[:,1], upper[:,1]))
+            lower = self.y[self.x<=s]
+            upper = self.y[self.x>s]
             
-        split_results = np.transpose(np.array([split_points,split_purity]))
-        best_purity = np.min(split_results[:,1])
-        min_split = np.array(np.where(split_results[:,1] == best_purity))
-        min_split = split_results[min_split[0,0],0]
+            purity = self.MeasureOfDispersion(lower, upper)
+            
+            if purity < best_purity:
+                best_purity = purity
+                min_split = s
         
         return min_split, best_purity
     
@@ -73,11 +73,23 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
     ###Note to team: Can make this into one big function where user input is split type
     
     
-    def All_Points(self,feature, target, sample = None):
-        self.data = np.transpose(np.array([feature,target])) 
-        split_points = np.unique(self.data[:, 0]) #Find adjacent values
-        optimal_split_point, best_purity = self.Splitting(split_points)
+    def All_Points(self,x, y):
+        self.x = x
+        self.y = y
+        self.split_points = np.unique(self.x) #Find adjacent values
+        optimal_split_point, best_purity = self.Splitting()
         return optimal_split_point, best_purity
  
+
+
+
+
+
+
+#BSP = Best_Splitting_Point()
+#BSP.All_Points(x1, y1)
+
+
+
 
 
