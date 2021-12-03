@@ -42,6 +42,54 @@ Best_Splitting_Point Class
 import numpy as np
 import Measure_Purity as sim
 
+# class Best_Splitting_Point(sim.MeasureOfDispersion):
+    
+#     def __init__ (self):
+#         self.counter_split_feature_visite = 0
+#         sim.MeasureOfDispersion.__init__(self)
+        
+#     #Step 1: Splitting Function
+    
+#     def Splitting(self): 
+
+#         best_purity = float('inf')
+        
+#         for s in self.split_points: #Loops over length of possible split points
+        
+#             self.counter_split_feature_visite += 1
+        
+#             lower = self.y[self.x<=s]
+#             upper = self.y[self.x>s]
+            
+#             purity = self.MeasureOfDispersion(lower, upper)
+            
+#             if purity < best_purity:
+#                 best_purity = purity
+#                 min_split = s
+        
+#         return min_split, best_purity
+    
+#     #Step 2: Calling Splitting Function in Step 1 for Different Splitting Point Strategies in Step 1
+#     ###Note to team: Can make this into one big function where user input is split type
+    
+    
+#     def All_Points(self,x, y):
+#         self.x = x
+#         self.y = y
+#         self.split_points = np.unique(self.x) #Find adjacent values
+#         optimal_split_point, best_purity = self.Splitting()
+#         return optimal_split_point, best_purity
+ 
+
+
+
+
+
+
+#BSP = Best_Splitting_Point()
+#BSP.All_Points(x1, y1)
+            
+    
 class Best_Splitting_Point(sim.MeasureOfDispersion):
     
     def __init__ (self):
@@ -54,18 +102,43 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
 
         best_purity = float('inf')
         
-        for s in self.split_points: #Loops over length of possible split points
+        x = self.x
+        y = self.y
         
-            self.counter_split_feature_visite += 1
+        x_sorted, x_unique_id = np.unique(x,return_index=False, return_inverse=True)
+        y_sorted = np.bincount(x_unique_id, weights=y)
+        n_sorted = np.bincount(x_unique_id, weights=np.ones(y.shape))
         
-            lower = self.y[self.x<=s]
-            upper = self.y[self.x>s]
+        n = len(y)
+        n_agg = len(y_sorted)
+        y_sum = sum(y)
+        y_squared_sum = sum(y**2)
+        running_sum = 0
+        running_sum_squared = 0
+        counter = 0
+        
+        if n_agg == 1:
+            best_purity = 0
+            min_split = x_sorted[0]
+        
+        for i in range(0,n_agg-1):
             
-            purity = self.MeasureOfDispersion(lower, upper)
+            counter += n_sorted[i]
+            running_sum += y_sorted[i] 
+            running_sum_squared += (y_sorted[i])**2
+                                     
+            if (y.dtype == 'bool'):
+                gini_1 = self.Gini_Score(counter, running_sum)
+                gini_2 = self.Gini_Score(n-counter, y_sum-running_sum)                
+                purity = self.Weighted_Avg(counter,gini_1,(n-counter),gini_2)                
+            else:
+                SSE_1 = self.SSE_Score(running_sum_squared, running_sum, counter)
+                SSE_2 = self.SSE_Score((y_squared_sum - running_sum_squared), (y_sum - running_sum), (n-counter))
+                purity = SSE_1 + SSE_2
             
             if purity < best_purity:
                 best_purity = purity
-                min_split = s
+                min_split = x_sorted[i]
         
         return min_split, best_purity
     
@@ -76,18 +149,9 @@ class Best_Splitting_Point(sim.MeasureOfDispersion):
     def All_Points(self,x, y):
         self.x = x
         self.y = y
-        self.split_points = np.unique(self.x) #Find adjacent values
         optimal_split_point, best_purity = self.Splitting()
         return optimal_split_point, best_purity
- 
 
-
-
-
-
-
-#BSP = Best_Splitting_Point()
-#BSP.All_Points(x1, y1)
 
 
 
