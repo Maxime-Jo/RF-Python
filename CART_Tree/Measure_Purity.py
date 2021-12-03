@@ -47,6 +47,21 @@ class MeasureOfDispersion:
         
         return gini
     
+    def Gini_Score (self, n, ones):
+        
+        bool_1 = ones
+        bool_0 = n - bool_1
+        gini = 1 - (bool_0/n)**2 - (bool_1/n)**2
+        
+        return gini
+    
+    def SSE_Score (self, y_squared_sum, y_sum, n):
+        
+        var = (y_squared_sum/n) - (y_sum/n)**2
+        sse = var*n
+        
+        return sse
+    
     def MSE (self, y):
         
         mean = y.mean()
@@ -84,7 +99,6 @@ class MeasureOfDispersion:
                 out = self.MSE(y1) + self.MSE(y2)                   # Sum of the mean sqared error
                 
         return out
-                        
 
 """
 Test the class output
