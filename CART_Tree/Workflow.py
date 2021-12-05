@@ -22,5 +22,5 @@ y = credit[target_name[0]]
 
 rf = RF.Random_Forest()
 rf_model = rf.Fit(X,y,cat_col=[7,8], num_feat = 3, n_tree = 4, sample_n = None, min_bucket=5, max_size = 4)
-pred = rf.Test_Prediction(rf_model, X,y)
+pred = rf.Test_Prediction(rf_model, X)
 
